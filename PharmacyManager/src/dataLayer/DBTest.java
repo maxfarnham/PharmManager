@@ -4,7 +4,7 @@ import java.sql.*;
 public class DBTest {
 	 public static void main( String args[] )
 	  {
-		 insert();
+		 select();
 	  }
 	 ///// Functions below-
 	 // Create a table
