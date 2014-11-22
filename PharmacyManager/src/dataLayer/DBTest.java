@@ -1,17 +1,50 @@
 package dataLayer;
 import java.sql.*;
+import java.util.ArrayList;
+//import java.util.HashMap;
+//import java.util.Iterator;
+//import java.util.List;
+//import java.util.Map;
+//import java.util.Set;
 
 public class DBTest {
 	 public static void main( String args[] )
 	  {
 		 //commandHandler.create();
-		 create();
-		 insert();
-		 select();
-		 update();
-		 select();
-		 delete();
-		 select();
+		 //ArrayList temp;
+		 //Iterator it = temp.iterator();
+		 //create();
+		 //insert();
+		 ArrayList<TestClass> temp = select();
+		 int i = 0;
+		 int size = temp.size();
+		 while(i < size){
+			// System.out.print(temp.get(i).getId());
+			 System.out.println( "ID = " + temp.get(i).getId());
+	         System.out.println( "NAME = " + temp.get(i).getName() );
+	         System.out.println( "AGE = " + temp.get(i).getAge() );
+	         System.out.println( "ADDRESS = " + temp.get(i).getAddress());
+	         System.out.println( "SALARY = " + temp.get(i).getSalary());
+	         System.out.println();
+	         i++;
+		 }
+		 
+		 //Set set;// = temp.entrySet();
+		 //Iterator<TestClass> it = temp.iterator();
+		 //while(it.hasNext()){
+			 //Map.Entry current = (Map.Entry) it.next();
+			 //System.out.print(current.getKey() + ": " + current.getValue()+ "\n");
+			 //it.next()args;
+			 
+			
+			 //System.out.print(it.next().hashCode());
+		 //}
+		 
+		 
+		 //update();
+		 //select();
+		// delete();
+		 //select();
 	  }
 	 ///// Functions below-
 	 // Create a table
@@ -35,7 +68,7 @@ public class DBTest {
 		      
 		    } catch ( Exception e ) {
 		      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-		      System.exit(0);
+		     // System.exit(0);
 		    }
 		    System.out.println("Opened database successfully");	 
 	 }
@@ -77,9 +110,14 @@ public class DBTest {
 		 
 	 }
 	 // Select
-	 public static void select(){
+	 public static ArrayList<TestClass> select(){
+		 //TestClass temp = new TestClass();
 		 Connection c = null;
 		    Statement stmt = null;
+		    ArrayList<TestClass> returnList = new ArrayList<TestClass>();
+		    //ArrayList<HashMap<String, Object>> returnList = new ArrayList<HashMap<String, Object>>();
+		    
+		    //HashMap<String, Object> tempHash = new HashMap<String, Object>();
 		    try {
 		      Class.forName("org.sqlite.JDBC");
 		      c = DriverManager.getConnection("jdbc:sqlite:test.db");
@@ -89,17 +127,33 @@ public class DBTest {
 		      stmt = c.createStatement();
 		      ResultSet rs = stmt.executeQuery( "SELECT * FROM COMPANY;" );
 		      while ( rs.next() ) {
+		    	  TestClass temp = new TestClass();
 		         int id = rs.getInt("id");
 		         String  name = rs.getString("name");
 		         int age  = rs.getInt("age");
 		         String  address = rs.getString("address");
 		         float salary = rs.getFloat("salary");
-		         System.out.println( "ID = " + id );
-		         System.out.println( "NAME = " + name );
-		         System.out.println( "AGE = " + age );
-		         System.out.println( "ADDRESS = " + address );
-		         System.out.println( "SALARY = " + salary );
-		         System.out.println();
+		         
+		         //System.out.println( "ID = " + id );
+		         //System.out.println( "NAME = " + name );
+		         //System.out.println( "AGE = " + age );
+		         //System.out.println( "ADDRESS = " + address );
+		         //System.out.println( "SALARY = " + salary );
+		         //System.out.println();
+		         
+		         temp.setId(id);
+		         temp.setName(name);
+		         temp.setAge(age);
+		         temp.setAddress(address);
+		         temp.setSalary(salary);
+		         returnList.add(temp);
+		         
+		         //tempHash.put("ID", id);
+		         //tempHash.put("NAME", name);
+		         //tempHash.put("AGE", age);
+		         //tempHash.put("ADDRESS", address);
+		         //tempHash.put("SALARY", salary);
+		         //returnList.add(tempHash);
 		      }
 		      rs.close();
 		      stmt.close();
@@ -109,6 +163,7 @@ public class DBTest {
 		      System.exit(0);
 		    }
 		    System.out.println("Operation done successfully");
+		    return returnList;
 	 }
 	 // Update
 	 public static  void update(){
