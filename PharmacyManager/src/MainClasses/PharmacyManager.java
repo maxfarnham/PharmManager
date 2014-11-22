@@ -12,7 +12,26 @@ public class PharmacyManager {
 	}
 	
 	//display all the bulks for each Medication
-	public void displayMyStock(){
+	//function to be renamed to getMedicationsIterator()?
+	//Actualy display to be done at GUI level
+	public Iterator displayMyStock(){
+		//here is what I will like to ideally be able to do...
+		String sql = "SELECT Medications.Name, Shipments.ShipmentID, " +
+		             "Shipments.InStock, Shipments.SizeType, Shipments.ExpDate " + //NOTE add SizeType to table
+		             "FROM Medications INNER JOIN Shipments " +
+		             "ON Medications.MedicineID = Shipments.MedicineID";
+		             
+		Object dataset = DB.executeQuery(sql);
+		
+		sql =   "SELECT SUM(Shipments.Sold) " +
+			"FROM Medications";
+			
+	      	Object scalar = DB.executeScalar(sql);
+		
+		Iterator medicineIterator = new MedicineIterator(dataset, scalar); 
+		
+		return medicineIterator;
+		/*
 		System.out.println("Overall total: " + this.getTotalStock());
 		System.out.println();
 		
@@ -30,6 +49,7 @@ public class PharmacyManager {
 			}
 			System.out.println();
 		}
+		*/
 	}
 	//Add medication types, with overstock flag and low on stock flag (ints)
 	//TODO error check parameters
