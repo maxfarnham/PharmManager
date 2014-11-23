@@ -115,10 +115,21 @@ public class PharmacyManager {
 	//Add medication types, with overstock flag and low on stock flag (ints)
 	//TODO error check parameters
 	public void addMedication(String name, int overFlag, int lowFlag){
+		String sql;
+		String safeName = name.replace("'", "''");
+		
+		sql = String.format("INSERT INTO Medications"
+				+ "(Name, LowStockThreshold, OverstockThreshold)"
+				+ "VALUES(%s, %d, %d)", safeName, lowFlag, overFlag);
+		
+		datatier.executeUpdate(sql);
+		
+		/*
 		Medication newMed = new Medication(name, overFlag, lowFlag);
 		
 		meds.add(newMed);
 		clock.addObserver(newMed);
+		*/
 		
 	}
 	
