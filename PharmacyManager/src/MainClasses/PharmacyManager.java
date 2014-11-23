@@ -1,19 +1,77 @@
 package MainClasses;
 
 import java.util.ArrayList;
+import java.sql.*;
 
 public class PharmacyManager {
+	
+	//An instance of the dataLayer where I can send sql commands
+	private DataTier datatier;
+	
+	
 	private int totalStock = 0; //Maybe not needed?
 	private ArrayList<Medication> meds = new ArrayList<Medication>(); //Aspirin, Tylenol, etc..
 	private BulkStore bulkStore = new SomeStore();// the factory method pattern
 	private Clock clock = new Clock(); //The concrete observable thing
 	
-	public PharmacyManager() {
+	public PharmacyManager(String dbFileName) {
+		datatier = new DataTier(dbFileName);
 	}
 	
+	//new method
+	public Medicine getMedicine(String name){
+		String sql;
+		ResultSet rs;
+		int stock, overFlag, lowFlag, sold;
+		ArrayList<Shipment> shpmts;
+		
+		sql = "SELECT LowStockThreshold, OverstockThreshold " +
+		      "FROM Medications " +
+		      "WHERE Name = " + name + ";";
+		
+		rs = datatier.executeQuery(sql);
+		rs.next();
+		
+		//set thresholds
+		lowFlag = rs.getInt("LowStockThreshold");
+		overFlag = rs.getInt("OverstockThreshold");
+		
+		sql = "SELECT SUM(InStock) AS Stock, SUM(Sold) AS Sold"  +
+			  "FROM Medications INNER JOIN Shipments " +
+			  "ON Medications.MedicineID = Shipments.MedicineID " +
+			  "WHERE Medications.Name = " + name + ";";
+		
+		rs = datatier.executeQuery(sql);
+		rs.next();
+		
+		//set stock and sold
+		stock = rs.getInt("Stock");
+		sold = rs.getInt("Sold");
+		
+		sql = "SELECT Shipments.ShipmentID, " +
+	          "Shipments.Expired, Shipments.InStock, Shipments.SizeType, Shipments.ExpDate " + //NOTE add SizeType to table
+	          "FROM Medications INNER JOIN Shipments " +
+	          "ON Medications.MedicineID = Shipments.MedicineID" +
+	          "WHERE Medications.Name = " + name + ";";
+		
+		rs = datatier.executeQuery(sql);
+		
+		//fill ArrayList
+		while(rs.next()){
+			int expired = rs.getInt("Expired");
+			int inStock = rs.getInt("InStock");
+			int sizeType = rs.getInt("SizeType");
+			int expDate = rs.getInt("ExpDate");
+
+			shpmts.add(new Shipment(expired, inStock, sizeType, expDate));
+		}
+		
+		return new Medicine(name, stock, overFlag, lowFlag, sold, shpmts);
+	}
 	//display all the bulks for each Medication
 	//function to be renamed to getMedicationsIterator()?
 	//Actualy display to be done at GUI level
+	/*
 	public Iterator displayMyStock(){
 		//here is what I will like to ideally be able to do...
 		String sql = "SELECT Medications.Name, Shipments.ShipmentID, " +
@@ -21,17 +79,18 @@ public class PharmacyManager {
 		             "FROM Medications INNER JOIN Shipments " +
 		             "ON Medications.MedicineID = Shipments.MedicineID";
 		             
-		Object dataset = DB.executeQuery(sql);
+		ResultSet dataset1 = datatier.executeQuery(sql);
 		
-		sql =   "SELECT SUM(Shipments.Sold) " +
-			"FROM Medications";
+		sql = "SELECT SUM(InStock) " +
+			  "FROM Shipments " +
+			  "GROUP BY MedicineID";
 			
-	      	Object scalar = DB.executeScalar(sql);
+	    ResultSet dataset2 = datatier.executeQuery(sql);
 		
-		Iterator medicineIterator = new MedicineIterator(dataset, scalar); 
+		Iterator medicineIterator = new MedicineIterator(dataset1, dataset2); 
 		
 		return medicineIterator;
-		/*
+		
 		System.out.println("Overall total: " + this.getTotalStock());
 		System.out.println();
 		
@@ -49,8 +108,10 @@ public class PharmacyManager {
 			}
 			System.out.println();
 		}
-		*/
-	}
+		
+	} */
+	
+	
 	//Add medication types, with overstock flag and low on stock flag (ints)
 	//TODO error check parameters
 	public void addMedication(String name, int overFlag, int lowFlag){
