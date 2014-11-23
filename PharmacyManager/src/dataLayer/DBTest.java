@@ -28,6 +28,8 @@ public class DBTest {
 	         System.out.println();
 	         i++;
 		 }
+		 System.out.print("Number of items: ");
+		 System.out.println(executeScalar("SELECT MAX(SALARY) FROM COMPANY"));
 		 
 		 //Set set;// = temp.entrySet();
 		 //Iterator<TestClass> it = temp.iterator();
@@ -67,7 +69,7 @@ public class DBTest {
 		      c.close();
 		      
 		    } catch ( Exception e ) {
-		      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+		     // System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 		     // System.exit(0);
 		    }
 		    System.out.println("Opened database successfully");	 
@@ -241,4 +243,25 @@ public class DBTest {
 	    }
 	    System.out.println("Operation done successfully");
 	  }
+	 public static Object executeScalar(String sql){   // scalar
+		 Connection c = null;
+		 Statement stmt = null;
+		 
+		 try {
+			Class.forName("org.sqlite.JDBC");
+		 	c = DriverManager.getConnection("jdbc:sqlite:test.db");
+		    Object result;
+		 	stmt = c.createStatement();
+		 	ResultSet rs = stmt.executeQuery(sql);
+		 	result = rs.getObject(1);
+		    stmt.close();
+		    c.close();
+		    
+		    return result;
+		      
+		    } catch ( Exception e ) {
+		      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+		      return null;		     
+		    } 
+	 }
 }
