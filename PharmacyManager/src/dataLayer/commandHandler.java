@@ -96,7 +96,7 @@ public class commandHandler {
 		 try {
 			Class.forName("org.sqlite.JDBC");
 		 	c = DriverManager.getConnection("jdbc:sqlite:pharmacy.db");
-		    //Object result;
+
 		    int cols, i;
 		 	stmt = c.createStatement();
 		 	ResultSetMetaData meta;
