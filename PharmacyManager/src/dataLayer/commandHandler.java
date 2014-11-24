@@ -1,5 +1,6 @@
 package dataLayer;
 import java.sql.*;
+import java.util.ArrayList;
 
 //import businessLayer.Medicine;
 
@@ -73,15 +74,51 @@ public class commandHandler {
 		 Statement stmt = null;		 
 		 try {
 			Class.forName("org.sqlite.JDBC");
-		 	c = DriverManager.getConnection("jdbc:sqlite:test.db");
+		 	c = DriverManager.getConnection("jdbc:sqlite:pharmacy.db");
 		    Object result;
 		 	stmt = c.createStatement();
 		 	ResultSet rs = stmt.executeQuery(sql);
 		 	result = rs.getObject(1);
+		 	rs.close();
 		    stmt.close();
 		    c.close();
 		    
 		    return result;
+		      
+		    } catch ( Exception e ) {
+		      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+		      return null;		     
+		    } 
+	 }
+	 public static ArrayList<ArrayList<Object>> executeNonScalar(String sql){   // Non scalar
+		 Connection c = null;
+		 Statement stmt = null;		 
+		 try {
+			Class.forName("org.sqlite.JDBC");
+		 	c = DriverManager.getConnection("jdbc:sqlite:pharmacy.db");
+		    //Object result;
+		    int cols, i;
+		 	stmt = c.createStatement();
+		 	ResultSetMetaData meta;
+		 	ArrayList<ArrayList<Object>> resultList = new ArrayList<ArrayList<Object>>();
+		 	
+		 	
+		 	ResultSet rs = stmt.executeQuery(sql);
+		 	meta = rs.getMetaData();
+		 	cols = meta.getColumnCount();
+		 	while(rs.next()){
+		 		ArrayList<Object> subList = new ArrayList<Object>();
+		 		for(i = 1; i <= cols; i++){
+		 			subList.add(rs.getObject(i));		 		
+		 		}
+		 		resultList.add(subList);
+		 	}
+		 	
+		 	rs.close();
+		    stmt.close();
+		    c.close();
+		    
+		    return resultList;
 		      
 		    } catch ( Exception e ) {
 		      System.err.println( e.getClass().getName() + ": " + e.getMessage() );

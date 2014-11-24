@@ -7,16 +7,19 @@ import java.util.ArrayList;
 //import java.util.Map;
 //import java.util.Set;
 
+
+
+// SQL Command execution examples
 public class DBTest {
 	 public static void main( String args[] )
 	  {
-		 //commandHandler.create();
-		 //ArrayList temp;
-		 //Iterator it = temp.iterator();
-		 //create();
-		 //insert();
-		 ArrayList<TestClass> temp = select();
+		 create();
+		// insert();
 		 int i = 0;
+		 
+	/*	 
+		 ArrayList<TestClass> temp = select();
+		 int i = 0, j = 0;
 		 int size = temp.size();
 		 while(i < size){
 			// System.out.print(temp.get(i).getId());
@@ -28,20 +31,43 @@ public class DBTest {
 	         System.out.println();
 	         i++;
 		 }
-		 System.out.print("Number of items: ");
+*/
+		 executeNonQuery("INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) " +
+                 "VALUES (1, 'Paul', 32, 'California', 20000.00 );");
+		 executeNonQuery("INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) " +
+          "VALUES (2, 'Allen', 25, 'Texas', 15000.00 );");
+		 executeNonQuery("INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) " +
+          "VALUES (3, 'Teddy', 23, 'Norway', 20000.00 );");
+		 executeNonQuery("INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) " +
+          "VALUES (4, 'Mark', 25, 'Rich-Mond ', 65000.00 );");
+		 
+		 
+		 // printing scalar directly
+		 System.out.print("Max Salary (direct): ");
 		 System.out.println(executeScalar("SELECT MAX(SALARY) FROM COMPANY"));
-		 
-		 //Set set;// = temp.entrySet();
-		 //Iterator<TestClass> it = temp.iterator();
-		 //while(it.hasNext()){
-			 //Map.Entry current = (Map.Entry) it.next();
-			 //System.out.print(current.getKey() + ": " + current.getValue()+ "\n");
-			 //it.next()args;
+		 // storing values from scalar query into values
+		 double salary = (double)executeScalar("SELECT MAX(SALARY) FROM COMPANY");
+		 System.out.println("Max salary (stored): " + salary);
+		 // printing non-scalar query directly
+		 System.out.println(executeNonScalar("SELECT NAME, AGE FROM COMPANY"));
+		 // storing values from non-scalar query into values
+		 ArrayList<ArrayList<Object>> testArrayList = executeNonScalar("SELECT NAME, AGE FROM COMPANY");
+		 int arraySize = testArrayList.size();
+		 System.out.println("using the array list gets");
+		 i = 0;
+		 for(i = 0; i < arraySize; i++){
+			 String name = (String)testArrayList.get(i).get(0);
+			 int age = (int)testArrayList.get(i).get(1);
+			 System.out.println(name + " " + age);
+			 // if we wanted to print everything
+			 //for(j = 0; j < testArrayList.get(i).size(); j++){
+			 //	 System.out.print(testArrayList.get(i).get(j) + " ");
+			 //}
+			 //System.out.print("\n");
 			 
-			
-			 //System.out.print(it.next().hashCode());
-		 //}
+		 }
 		 
+		
 		 
 		 //update();
 		 //select();
@@ -75,7 +101,7 @@ public class DBTest {
 		    System.out.println("Opened database successfully");	 
 	 }
 	 // Insert 
-	 public static void insert(){
+	 /*public static void insert(){
 		 Connection c = null;
 		    Statement stmt = null;
 		    try {
@@ -106,13 +132,13 @@ public class DBTest {
 		      c.close();
 		    } catch ( Exception e ) {
 		      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-		      System.exit(0);
+		      //System.exit(0);
 		    }
 		    System.out.println("Records created successfully");
 		 
-	 }
+	 }*/
 	 // Select
-	 public static ArrayList<TestClass> select(){
+	 /*public static ArrayList<TestClass> select(){
 		 //TestClass temp = new TestClass();
 		 Connection c = null;
 		    Statement stmt = null;
@@ -166,9 +192,9 @@ public class DBTest {
 		    }
 		    System.out.println("Operation done successfully");
 		    return returnList;
-	 }
+	 }*/
 	 // Update
-	 public static  void update(){
+	 /*public static  void update(){
 		 Connection c = null;
 		    Statement stmt = null;
 		    try {
@@ -204,8 +230,8 @@ public class DBTest {
 		      System.exit(0);
 		    }
 		    System.out.println("Operation done successfully");	 
-	 }
-	 public static void delete()
+	 }*/
+	 /*public static void delete()
 	  {
 	    Connection c = null;
 	    Statement stmt = null;
@@ -243,6 +269,25 @@ public class DBTest {
 	    }
 	    System.out.println("Operation done successfully");
 	  }
+	 */
+	 public static int executeNonQuery(String sql){   // non-query
+		 Connection c = null;
+		 Statement stmt = null;
+		 try {
+			Class.forName("org.sqlite.JDBC");
+		 	c = DriverManager.getConnection("jdbc:sqlite:test.db");
+		      
+		 	stmt = c.createStatement();
+		 	stmt.executeUpdate(sql);		    
+		    stmt.close();
+		    c.close();
+		    return 1;
+		      
+		    } catch ( Exception e ) {
+		      //System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+		      return 0;		     
+		    } 
+	 }
 	 public static Object executeScalar(String sql){   // scalar
 		 Connection c = null;
 		 Statement stmt = null;
@@ -254,10 +299,47 @@ public class DBTest {
 		 	stmt = c.createStatement();
 		 	ResultSet rs = stmt.executeQuery(sql);
 		 	result = rs.getObject(1);
+		 	rs.close();
 		    stmt.close();
 		    c.close();
 		    
 		    return result;
+		      
+		    } catch ( Exception e ) {
+		      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+		      return null;		     
+		    } 
+	 }
+	 
+	 public static ArrayList<ArrayList<Object>> executeNonScalar(String sql){   // Non scalar
+		 Connection c = null;
+		 Statement stmt = null;		 
+		 try {
+			Class.forName("org.sqlite.JDBC");
+		 	c = DriverManager.getConnection("jdbc:sqlite:test.db");
+		    //Object result;
+		    int cols, i;
+		 	stmt = c.createStatement();
+		 	ResultSetMetaData meta;
+		 	ArrayList<ArrayList<Object>> resultList = new ArrayList<ArrayList<Object>>();
+		 	
+		 	
+		 	ResultSet rs = stmt.executeQuery(sql);
+		 	meta = rs.getMetaData();
+		 	cols = meta.getColumnCount();
+		 	while(rs.next()){
+		 		ArrayList<Object> subList = new ArrayList<Object>();
+		 		for(i = 1; i <= cols; i++){
+		 			subList.add(rs.getObject(i));		 		
+		 		}
+		 		resultList.add(subList);
+		 	}
+		 	
+		 	rs.close();
+		    stmt.close();
+		    c.close();
+		    
+		    return resultList;
 		      
 		    } catch ( Exception e ) {
 		      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
