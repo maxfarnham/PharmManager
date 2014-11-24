@@ -46,6 +46,30 @@ public class DBTest {
 			 //System.out.print("\n");
 			 
 		 }
+		 
+		 
+		 String name;
+		 int age;
+		 ResultSet rs = null; 
+		 rs = executeNonScalar2("SELECT NAME, AGE FROM COMPANY");
+		 System.out.println("trying nonScalar2");
+		 try {
+			 System.out.println("Trying...");
+			while(rs.next()){
+				System.out.println("Inside while");				
+				name = rs.getString("Name");
+				age = rs.getInt("Age");
+				System.out.println(name + " " + age);			 		
+			 	}
+		} catch (SQLException e) {
+			System.out.println("Oops");
+			e.printStackTrace();
+		}
+		 if(rs == null){
+			 System.out.println("rs was Null!");			 
+		 }
+		 System.out.println("Done");
+		 
 	  }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	 // Create a table
@@ -143,6 +167,26 @@ public class DBTest {
 		    c.close();
 		    
 		    return resultList;
+		      
+		    } catch ( Exception e ) {
+		      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+		      return null;		     
+		    } 
+	 }
+	 public static ResultSet executeNonScalar2(String sql){   // Non scalar
+		 Connection c = null;
+		 Statement stmt = null;		 
+		 try {
+			Class.forName("org.sqlite.JDBC");
+		 	c = DriverManager.getConnection("jdbc:sqlite:test.db");
+		   
+		 	stmt = c.createStatement();
+		 			 			 	
+		 	ResultSet rs = stmt.executeQuery(sql);
+		    stmt.close();
+		    c.close();
+		    
+		    return rs;
 		      
 		    } catch ( Exception e ) {
 		      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
