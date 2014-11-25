@@ -1,16 +1,22 @@
 package businessLayer;
 
 public class Shipment {
+	private int shpmtID;
 	private int expired;
 	private int inStock;
 	private int sizeType;
 	private int expDate;
 
-	public Shipment(int expired, int inStock, int sizeType, int expDate){
+	public Shipment(int shpmtID, int expired, int inStock, int sizeType, int expDate){
+		this.shpmtID = shpmtID;
 		this.expired = expired;
 		this.inStock = inStock;
 		this.sizeType = sizeType;
 		this.expDate = expDate;
+	}
+	
+	public int getShipmentID(){
+		return shpmtID;
 	}
 	
 	public int getExpired(){
