@@ -21,7 +21,7 @@ public class GUI extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	private JTextArea displayTA;
 	private JSpinner numSpin, expSpin, lowSpin, overSpin;
-	private JLabel medicineL, numberL, expireL, newMedicineL, lowL, overL;
+	private JLabel medicineL, numberL, expireL, newMedicineL, lowL, overL, developerL;
 	private JTextField medicineTF, newMedicineTF;
 	private JButton restockB, saleB, reportB, dayB, newMedB, clearB;
 	private JRadioButton smallRB, mediumRB, largeRB;
@@ -47,6 +47,12 @@ public class GUI extends JFrame implements ActionListener{
 		int max = 2147483647; // max int
 		int min = 0;
 		int step = 1;
+		///////////////////
+		
+		developerL = new JLabel("By: Max, Dhruv, Justo, Chris, Jacob");
+		developerL.setSize(300,25);
+		developerL.setLocation(col1, row1 + 460);
+		c.add(developerL);
 		
 		///////////////////	
 		displayTA = new JTextArea();
