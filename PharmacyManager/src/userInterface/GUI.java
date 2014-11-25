@@ -31,7 +31,9 @@ public class GUI extends JFrame implements ActionListener{
 	private ButtonGroup sizeGroup;
 	//private Font header = new Font("", null, 8);
 	
-	
+	public void printToScreen(String str){
+		displayTA.setText(str);
+	}
 	public void GUILaunch(){
 		int col1 = 20;
 		int row1 = 20;  // index for col1
@@ -56,7 +58,7 @@ public class GUI extends JFrame implements ActionListener{
 		
 		developerL = new JLabel("By: Max, Dhruv, Justo, Chris, Jacob");
 		developerL.setSize(300,25);
-		developerL.setLocation(col1, row1 + 460);
+		developerL.setLocation(col1, row1 + 450);
 		c.add(developerL);
 		
 		///////////////////	
@@ -251,6 +253,9 @@ public class GUI extends JFrame implements ActionListener{
 		  numberL.setForeground(Color.black);
 		  medicineL.setForeground(Color.black);
 		  expireL.setForeground(Color.black);
+		  newMedicineL.setForeground(Color.black);
+		  lowL.setForeground(Color.black);
+		  overL.setForeground(Color.black);
 		  if(m.getSource() == saleB){
 			  // sale needs Medicine name, qty, size, maybe
 			  if(medicine.equals("") || size == 0 || quantity == 0){
@@ -261,7 +266,8 @@ public class GUI extends JFrame implements ActionListener{
 	    		  medicineL.setForeground(Color.red);
 			  }
 			  else{
-			      displayTA.setText(medicine);    
+				  printToScreen(medicine);
+			      //displayTA.setText(medicine);    
 			  }
 	    	  //String result = commandHandler.executeNonScalar("SELECT * FROM MEDICINE").toString();
 		      
@@ -276,11 +282,11 @@ public class GUI extends JFrame implements ActionListener{
 	    		  medicineL.setForeground(Color.red);
 	    		  expireL.setForeground(Color.red);
 	    		  
-	    		  displayTA.setText("NULL!");
 	    	  }
 	    	  else{
 	    		  // execute method to restock
-	    		  displayTA.setText(medicine + "\n" + quantityStr + " " + size); // sample
+	    		  printToScreen("restock");
+	    		  //displayTA.setText(medicine + "\n" + quantityStr + " " + size); // sample
 	    		  
 	    	  }
 	      }
@@ -290,10 +296,21 @@ public class GUI extends JFrame implements ActionListener{
 		      int next = (int)numSpin.getValue();
 		      String str = String.format("%d", next);
 		      
-		      displayTA.setText(str);  
+		      printToScreen(str);
+		      
+		      //displayTA.setText(str);  
 	      }
 	      if(m.getSource() == newMedB){
-	    	  displayTA.setText(newMedicine + " " + lowStr + " " + overStr);
+	    	  // New medicine needs newMed name, low threshold and over threshold
+	    	  if(medicine.equals("") || low == 0 || over == 0){
+	    		  newMedicineL.setForeground(Color.red);
+	    		  lowL.setForeground(Color.red);
+	    		  overL.setForeground(Color.red);
+	    	  }
+	    	  else{
+	    		  printToScreen(newMedicine + " " + lowStr + " " + overStr);
+	    		  //displayTA.setText(newMedicine + " " + lowStr + " " + overStr);
+	    	  }
 	      }
 	      if(m.getSource() == clearB){
 	    	  
@@ -304,7 +321,8 @@ public class GUI extends JFrame implements ActionListener{
 	    	  expSpin.setValue(0);
 	    	  lowSpin.setValue(0);
 	    	  overSpin.setValue(0);
-	    	  displayTA.setText("");
+	    	  printToScreen("");
+	    	  //displayTA.setText("");
 	      }
 	      
 	  }
