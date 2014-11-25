@@ -1,105 +1,78 @@
-package MainClasses;
+package businessLayer;
+
+import dataLayer.DataLayer;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.sql.*;
 
 public class PharmacyManager {
-	
-	//An instance of the dataLayer where I can send sql commands
-	private DataTier datatier;
-	
-	
-	private int totalStock = 0; //Maybe not needed?
-	private ArrayList<Medication> meds = new ArrayList<Medication>(); //Aspirin, Tylenol, etc..
-	private BulkStore bulkStore = new SomeStore();// the factory method pattern
-	private Clock clock = new Clock(); //The concrete observable thing
-	
-	public PharmacyManager(String dbFileName) {
-		datatier = new DataTier(dbFileName);
-	}
-	
-	//new method
-	public Medicine getMedicine(String name){
-		String sql;
-		ResultSet rs;
-		int stock, overFlag, lowFlag, sold;
-		ArrayList<Shipment> shpmts;
-		
-		sql = "SELECT LowStockThreshold, OverstockThreshold " +
-		      "FROM Medications " +
-		      "WHERE Name = " + name + ";";
-		
-		rs = datatier.executeQuery(sql);
-		rs.next();
-		
-		//set thresholds
-		lowFlag = rs.getInt("LowStockThreshold");
-		overFlag = rs.getInt("OverstockThreshold");
-		
-		sql = "SELECT SUM(InStock) AS Stock, SUM(Sold) AS Sold"  +
-			  "FROM Medications INNER JOIN Shipments " +
-			  "ON Medications.MedicineID = Shipments.MedicineID " +
-			  "WHERE Medications.Name = " + name + ";";
-		
-		rs = datatier.executeQuery(sql);
-		rs.next();
-		
-		//set stock and sold
-		stock = rs.getInt("Stock");
-		sold = rs.getInt("Sold");
-		
-		sql = "SELECT Shipments.ShipmentID, " +
-	          "Shipments.Expired, Shipments.InStock, Shipments.SizeType, Shipments.ExpDate " + //NOTE add SizeType to table
-	          "FROM Medications INNER JOIN Shipments " +
-	          "ON Medications.MedicineID = Shipments.MedicineID" +
-	          "WHERE Medications.Name = " + name + ";";
-		
-		rs = datatier.executeQuery(sql);
-		
-		//fill ArrayList
-		while(rs.next()){
-			int expired = rs.getInt("Expired");
-			int inStock = rs.getInt("InStock");
-			int sizeType = rs.getInt("SizeType");
-			int expDate = rs.getInt("ExpDate");
 
-			shpmts.add(new Shipment(expired, inStock, sizeType, expDate));
-		}
-		
-		return new Medicine(name, stock, overFlag, lowFlag, sold, shpmts);
+	//dataLayer
+	DataLayer DB;
+
+	private Clock clock = new Clock(); //The concrete observable thing
+
+	public PharmacyManager() throws ClassNotFoundException, SQLException {
+		DB = new DataLayer("pharmacy");
 	}
+
+	//Returns Medicine ojbect or null if fail.
+	public Medicine getMedicine(String name) {
+		try {
+			ArrayList<Map<String, Object>> rs;
+			ArrayList<Shipment> shpmts = new ArrayList<Shipment>();
+
+			rs = DB.executeQuery("SELECT TOP 1 MedicineID, LowStockThreshold, OverstockThreshold " +
+					"FROM Medications " +
+					"WHERE Name = '" + name + "'");
+
+			if(rs == null || rs.size() < 1) 
+				return null;
+
+			Map<String, Object> medicine = rs.get(0);
+			int overFlag   = (int) medicine.get("OverstockThreshold"), 
+					lowFlag    = (int) medicine.get("LowStockThreshold"),
+					medicineID = (int) medicine.get("MedicineID"),
+					stock      = (int) DB.executeScalar("SELECT COALESCE(SUM(InStock), 0) FROM Shipment WHERE MedicineID = " + medicineID), 
+					sold       = (int) DB.executeScalar("SELECT COALESCE(SUM(Sold), 0) FROM Shipment WHERE MedicineID = " + medicineID); 
+
+			rs = DB.executeQuery("SELECT ShipmentID, Expired, InStock, Size, ExpDate " +
+					"FROM Shipments" +
+					"WHERE MedicineID = " + medicineID + ";");
+
+			for(Map<String, Object> shipment : rs){
+				int shpmtID  = (int)shipment.get("ShipmentID"),
+						expired  = (int)shipment.get("Expired"),
+						inStock  = (int)shipment.get("InStock"),
+						sizeType = (int)shipment.get("Size"),
+						expDate  = (int)shipment.get("ExpDate");
+
+				shpmts.add(new Shipment(shpmtID, expired, inStock, sizeType, expDate));
+			}
+
+			return new Medicine(name, overFlag, lowFlag, sold, shpmts);
+		}
+		catch (Exception e) {
+			//TODO - logging?
+			return null;
+		}
+	}
+
 	//display all the bulks for each Medication
-	//function to be renamed to getMedicationsIterator()?
 	//Actualy display to be done at GUI level
 	/*
 	public Iterator displayMyStock(){
-		//here is what I will like to ideally be able to do...
-		String sql = "SELECT Medications.Name, Shipments.ShipmentID, " +
-		             "Shipments.InStock, Shipments.SizeType, Shipments.ExpDate " + //NOTE add SizeType to table
-		             "FROM Medications INNER JOIN Shipments " +
-		             "ON Medications.MedicineID = Shipments.MedicineID";
-		             
-		ResultSet dataset1 = datatier.executeQuery(sql);
-		
-		sql = "SELECT SUM(InStock) " +
-			  "FROM Shipments " +
-			  "GROUP BY MedicineID";
-			
-	    ResultSet dataset2 = datatier.executeQuery(sql);
-		
-		Iterator medicineIterator = new MedicineIterator(dataset1, dataset2); 
-		
-		return medicineIterator;
-		
+
 		System.out.println("Overall total: " + this.getTotalStock());
 		System.out.println();
-		
+
 		for(Medication med : meds){
 			System.out.println("Stock for " + med.getName() );			
 			System.out.println("Total Stock:" + med.getStock() );
-			
+
 			Iterator bulkIterator = med.createIterator();
-			
+
 			while(bulkIterator.hasNext()){
 				Bulk bulk = (Bulk) bulkIterator.next();
 				System.out.println("Bulk amount: " + bulk.getAmount() );
@@ -108,115 +81,114 @@ public class PharmacyManager {
 			}
 			System.out.println();
 		}
-		
+
 	} */
-	
-	
+
+
 	//Add medication types, with overstock flag and low on stock flag (ints)
 	//TODO error check parameters
-	public void addMedication(String name, int overFlag, int lowFlag){
-		String sql;
-		String safeName = name.replace("'", "''");
-		
-		sql = String.format("INSERT INTO Medications"
-				+ "(Name, LowStockThreshold, OverstockThreshold)"
-				+ "VALUES(%s, %d, %d)", safeName, lowFlag, overFlag);
-		
-		datatier.executeUpdate(sql);
-		
-		/*
-		Medication newMed = new Medication(name, overFlag, lowFlag);
-		
-		meds.add(newMed);
-		clock.addObserver(newMed);
-		*/
-		
+	//returns rowsModified (0 on fail)
+	public boolean addMedication(String name, int overFlag, int lowFlag){
+		try {
+			String sql;
+			String safeName = name.replace("'", "''");
+
+			sql = String.format("INSERT INTO Medications"
+					+ "(Name, Sold, LowStockThreshold, OverstockThreshold)"
+					+ "VALUES(%s, %d, %d, %d);", safeName, 0, lowFlag, overFlag);
+
+			int rowsModified = DB.executeNonQuery(sql);
+
+			if(rowsModified < 1) 
+				return false;
+
+			return true;
+		}
+		catch (Exception e) {
+			//TODO - logging?
+			return false;
+		}
 	}
-	
+
 	//When a new bulk is added to inventory
 	//TODO error check parameters
-	public boolean insertBulk(String medication, int expDate, int amount, int sizeOfCans){
-		Bulk newBulk = bulkStore.orderBulk(expDate, amount, sizeOfCans); //use factory method to get a bulk
-		
-		//Find the correct medication
-		for(Medication med : meds){
-			if(med.getName() == medication){ //match the given name
-				med.addBulk(newBulk);
-				totalStock += amount;
-				return true; //success
-			}
-		}
-		
-		return false; //medication not found
+	public boolean insertBulk(String medication, int expDate, int amount, int sizeOfCans) throws ClassNotFoundException, SQLException{
+		try {
+			String sql;
 
+			sql = String.format("SELECT TOP 1 COALESCE(MedicineID, 0) " +
+					"FROM Medications" +
+					"WHERE Name = '%s';", medication);
+
+			int medicineID = (int)DB.executeScalar(sql);
+
+			if(medicineID == 0) 
+				return false;
+
+			sql = String.format("INSERT INTO Shipments" +
+					"(Expired, InStock, ExpDate, Size, MedicineID)" +
+					"VALUES(%d, %d, %d, %d, %d)", 0, amount, expDate, sizeOfCans, medicineID);
+
+			int rowsModified = DB.executeNonQuery(sql);
+
+			if(rowsModified < 1) 
+				return false;
+
+			return true;
+		}
+		catch (Exception e) {
+			//TODO - logging?
+			return false;
+		}
 	}
-	
-	
+
+
 	//When a purchase is made
 	//
 	//TODO implement another algorithm? Always take from bulk with lowest ExpDate or
 	// take from a specified bulk (may need to add ID's to different bulks)
 	//TODO error check parameters
 	public int purchased(String medication, int amount, int size){
-		for(Medication med : meds){
-				
-			//search for matching medication
-			if(med.getName() == medication){
-				
-				Iterator bulkIterator = med.createIterator(); //use of the iterator pattern
-				
-				//search for matching size
-				while(bulkIterator.hasNext()){
-					Bulk bulk = (Bulk) bulkIterator.next();
-					
-					//right size found
-					if(bulk.getSizeType() == size){
-						int dif = bulk.getAmount() - amount; //difference between the amount in the bulk and what the user actually wants
-						
-						if(dif > 0){ //there is enough in this bulk
-							bulk.setAmount(dif); //whats left in the bulk
-							med.saleMade(amount); //sold count updated
-							totalStock -= amount;
-							return 0;
-						}
-						else if (dif == 0){ //Exact amount in the bulk, so just take what's there and remove bulk
-							med.saleMade(amount);
-							totalStock -= amount;
-							bulkIterator.removeCurrent();
-							return 0;
-						}
-						else{ //not enough in this bulk, so just take what you can and return what was not taken
-							  // to possibly use in another call to this function
-							med.saleMade(bulk.getAmount()); //only take what was left in the bulk
-							totalStock -= bulk.getAmount();
-							bulkIterator.removeCurrent();
-							return Math.abs(dif); //amount to take from another bulk
-						}
-							
-					}
-					
-				} //while
-				
-				return -1; //no match in size type or no bulks in Medication
+		try {
+			Medicine med = getMedicine(medication);
+
+			//BUG - do we want this to decrement all our stock even though the sale can't be completed? Should warn before hand, or roll back the purchse if there's not enough
+			Iterator iter = med.getShipmentIterator();
+			while(iter.next() && amount > 0) {
+				Shipment shp = (Shipment) iter.curr();
+
+				//make sure it's the right size, not expired
+				if(shp.getSizeType() == size && shp.getExpired() == 0) {
+					int dif = shp.getInStock() - amount;
+
+					DB.executeNonQuery(String.format("UPDATE Shipment" +
+							"SET Sold = %d" +
+							"WHERE ShipmentID = %d;", shp.getSold() + amount, med.getMedicineId()));
+
+					DB.executeNonQuery(String.format("UPDATE Shipments" +
+							"SET InStock = %d" +
+							"WHERE ShipmentID = %d;", dif, shp.getShipmentID()));
+
+					if(dif > 0)
+						amount = dif;
+					else
+						amount = 0;	
+				}
 			}
-			
-		}//for
-		
-		
-		return -1; //med not found
+
+			return amount; //medication has ran out, return what couldn't be taken out.
+		} catch (Exception e) {
+			return -1;
+		}
 	}
-	
+
 	public void aDayHasPassed(){
 		clock.aDayHasPassed();
 	}
-	
+
 	//TODO
 	public void displayPopularMedications(){
-		
-	}
-	
-	public int getTotalStock(){
-		return totalStock;
+
 	}
 
 }

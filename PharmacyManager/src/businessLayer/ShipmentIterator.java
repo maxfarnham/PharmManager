@@ -3,25 +3,31 @@ import java.util.ArrayList;
 
 public class ShipmentIterator implements Iterator{
 	private ArrayList<Shipment> shpmts;
-	int position = 0;
+	int position = -1;
 	
 	public ShipmentIterator(ArrayList<Shipment> shpmts){
 		this.shpmts = shpmts;
 	}
+
 	@Override
-	public boolean hasNext() {
-		if(position < shpmts.size())
+	public boolean next() {
+		if(position + 1 < shpmts.size()) {
+			position += 1;
 			return true;
+		}
 		
 		return false;
 	}
-
-	public Object next() {
-		Shipment shipment = shpmts.get(position);
-		
-		position += 1;
-		
-		return shipment;
+	
+	@Override
+	public Object curr() {
+		return shpmts.get(position);
+	}
+	
+	@Override
+	public Object first() {
+		position = 0;
+		return curr();
 	}
 
 }

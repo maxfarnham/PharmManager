@@ -1,6 +1,7 @@
-package MainClasses;
+package businessLayer;
 
 public interface Iterator {
-	boolean hasNext();
-	Object next();
+	boolean next();
+	Object first();
+	Object curr();
 }
