@@ -27,21 +27,23 @@ public class commandHandler {
 		      c = DriverManager.getConnection("jdbc:sqlite:pharmacy.db");
 		      
 		      stmt = c.createStatement();
-		      String sql = 	"CREATE TABLE medicine " +
-		                   	"(medicineID 	INT PRIMARY KEY     NOT NULL," +
-		                   	" name          VARCHAR				NOT NULL, " + 
-		                   	" lowThreshold	INT     			NOT NULL, " + 
-		                   	" overThreshold	INT					NOT NULL, " +
-		                   	" size			VARCHAR    			NOT NULL)";
+		      String sql = 	"CREATE TABLE MEDICINE " +
+		                   	"(MedicineID 			INT PRIMARY KEY     NOT NULL," +
+		                   	" Name    		      	VARCHAR				NOT NULL, " + 
+		                   	" LowStockThreshold		INT     			NOT NULL, " + 
+		                   	" OverStockThreshold	INT					NOT NULL)";
 		      stmt.executeUpdate(sql);
-		    /* If another table is required in database, use this
-		      sql = 		"CREATE TABLE medicine " +
-	                   		"(medicineID 	INT PRIMARY KEY     NOT NULL," +
-	                   		" name          VARCHAR    NOT NULL, " + 
-	                   		" lowThreshold	INT     NOT NULL, " + 
-	                   		" overThreshold	INT		NOT NULL)";
+		    // If another table is required in database, use this
+		      sql = 		"CREATE TABLE SHIPMENT " +
+	                   		"(ShipmentID 	INT PRIMARY KEY     NOT NULL," +
+	                   		" Sold          INT	    			NOT NULL, " + 
+	                   		" InStock		INT     			NOT NULL, " + 
+	                   		" Size			INT					NOT NULL, " +
+		                   	" Expired		INT					NOT NULL, " +
+	                   		" ExpDate		INT					NOT NULL, " +
+		                   	" MedicineID	INT					NOT NULL)";
 		      stmt.executeUpdate(sql);
-	      */
+	      
 		      stmt.close();
 		      c.close();
 		      
