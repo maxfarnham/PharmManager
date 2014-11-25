@@ -252,7 +252,7 @@ public class GUI extends JFrame implements ActionListener{
 		  medicineL.setForeground(Color.black);
 		  expireL.setForeground(Color.black);
 		  if(m.getSource() == saleB){
-			  // sale needs Medicine name, qty, size
+			  // sale needs Medicine name, qty, size, maybe
 			  if(medicine.equals("") || size == 0 || quantity == 0){
 				  smallRB.setForeground(Color.red);
 	    		  mediumRB.setForeground(Color.red);
