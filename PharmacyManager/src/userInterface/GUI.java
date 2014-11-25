@@ -12,7 +12,10 @@ import java.awt.*;
 import java.awt.event.*;
 */
 import javax.swing.*;
+
+import java.awt.Color;
 import java.awt.Container;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -25,7 +28,9 @@ public class GUI extends JFrame implements ActionListener{
 	private JTextField medicineTF, newMedicineTF;
 	private JButton restockB, saleB, reportB, dayB, newMedB, clearB;
 	private JRadioButton smallRB, mediumRB, largeRB;
-	ButtonGroup sizeGroup;
+	private ButtonGroup sizeGroup;
+	//private Font header = new Font("", null, 8);
+	
 	
 	public void GUILaunch(){
 		int col1 = 20;
@@ -228,23 +233,52 @@ public class GUI extends JFrame implements ActionListener{
 		  String newMedicine = newMedicineTF.getText();
 		  int quantity = (int)numSpin.getValue();
 		  String quantityStr = String.format("%d", quantity);
+		  int expire = (int)expSpin.getValue();
+		  String expStr = String.format("%d", expire);
 		  int low = (int)lowSpin.getValue();
 		  String lowStr = String.format("%d", low);
 		  int over = (int)overSpin.getValue();
 		  String overStr = String.format("%d", over);
-	      if (m.getSource() == restockB){
-	    		  
-	    	  //DataLayer.executeQuery("SELECT * FROM MEDICINE");
-
-		      //String result = DataLayer.executeQuery("SELECT * FROM MEDICINE").toString();
-		      //String next = medicineTF.getText();
-		      displayTA.setText(medicine + "\n" + quantityStr + " " + size);	    	  
-	      }
-	      if(m.getSource() == saleB){
+		  smallRB.setForeground(Color.black);
+		  mediumRB.setForeground(Color.black);
+		  largeRB.setForeground(Color.black);
+		  numberL.setForeground(Color.black);
+		  medicineL.setForeground(Color.black);
+		  expireL.setForeground(Color.black);
+		  if(m.getSource() == saleB){
+			  // sale needs Medicine name, qty, size
+			  if(medicine.equals("") || size == 0 || quantity == 0){
+				  smallRB.setForeground(Color.red);
+	    		  mediumRB.setForeground(Color.red);
+	    		  largeRB.setForeground(Color.red);
+	    		  numberL.setForeground(Color.red);
+	    		  medicineL.setForeground(Color.red);
+			  }
+			  else{
+			      displayTA.setText(medicine);    
+			  }
 	    	  //String result = commandHandler.executeNonScalar("SELECT * FROM MEDICINE").toString();
-		      String next = medicineTF.getText();
-		      displayTA.setText(next);  
+		      
 	      }
+	      if (m.getSource() == restockB){
+	    	  //Restock needs Medicine Name, Qty, Size, expire
+	    	  if(medicine.equals("") || quantity == 0 || size == 0 || expire == 0){
+	    		  smallRB.setForeground(Color.red);
+	    		  mediumRB.setForeground(Color.red);
+	    		  largeRB.setForeground(Color.red);
+	    		  numberL.setForeground(Color.red);
+	    		  medicineL.setForeground(Color.red);
+	    		  expireL.setForeground(Color.red);
+	    		  
+	    		  displayTA.setText("NULL!");
+	    	  }
+	    	  else{
+	    		  // execute method to restock
+	    		  displayTA.setText(medicine + "\n" + quantityStr + " " + size); // sample
+	    		  
+	    	  }
+	      }
+	      
 	      if(m.getSource() == reportB){
 	    	  //String result = d.executeNonScalar("SELECT * FROM MEDICINE").toString();
 		      int next = (int)numSpin.getValue();
