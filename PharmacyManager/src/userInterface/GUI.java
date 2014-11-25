@@ -1,27 +1,22 @@
 package userInterface;
 
-
 /*
 import dataLayer.*;
 import java.util.Scanner;
-import java.awt.Color;
-
 import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.*;
 import java.awt.event.*;
 */
 import javax.swing.*;
-
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class GUI extends JFrame implements ActionListener{
-
 	private static final long serialVersionUID = 1L;
+	// Objects in the GUI
 	private JTextArea displayTA;
 	private JSpinner numSpin, expSpin, lowSpin, overSpin;
 	private JLabel medicineL, numberL, expireL, newMedicineL, lowL, overL, developerL;
@@ -30,9 +25,11 @@ public class GUI extends JFrame implements ActionListener{
 	private JRadioButton smallRB, mediumRB, largeRB;
 	private ButtonGroup sizeGroup;
 	
+	// Public access to print to display
 	public void printToScreen(String str){
 		displayTA.setText(str);
 	}
+	
 	public void GUILaunch(){
 		int col1 = 20;
 		int row1 = 20;  // index for col1
@@ -87,13 +84,6 @@ public class GUI extends JFrame implements ActionListener{
 		dayB.addActionListener(this);
 		///////////////////
 				
-		dayB = new JButton("End of Day");
-		dayB.setSize(95, 30);
-		dayB.setLocation(col1+100, row1);
-		c.add(dayB);
-		dayB.addActionListener(this);
-		
-		///////////////////
 		medicineL = new JLabel("Medicine: ");
 		medicineL.setSize(125, 25);
 		medicineL.setLocation(col2, row23);
@@ -278,11 +268,10 @@ public class GUI extends JFrame implements ActionListener{
 				  // execute sale method
 				  // sale(medicine, quantity, size);
 				  
-				  printToScreen(medicine + " " + sizeStr + " " + quantityStr);
+				  printToScreen("saleB " + medicine + " " + sizeStr + " " + quantityStr);
 			      //displayTA.setText(medicine);    
 			  }
-	    	  //String result = commandHandler.executeNonScalar("SELECT * FROM MEDICINE").toString();
-		      
+	    	  //String result = commandHandler.executeNonScalar("SELECT * FROM MEDICINE").toString();    
 	      }
 	      if (m.getSource() == restockB){
 	    	  //Restock needs Medicine Name, Qty, Size, expire
@@ -292,10 +281,10 @@ public class GUI extends JFrame implements ActionListener{
 	    		  largeRB.setForeground(Color.red);
 	    		  numberL.setForeground(Color.red);
 	    		  medicineL.setForeground(Color.red);
-	    		  expireL.setForeground(Color.red);
-	    		  
+	    		  expireL.setForeground(Color.red);	    		  
 	    	  }
 	    	  else{
+	    		  //TODO:
 	    		  // execute method to restock
 	    		  // restock(medicine, quantity, size, expire);
 	    		  
@@ -311,6 +300,7 @@ public class GUI extends JFrame implements ActionListener{
 	    		  overL.setForeground(Color.red);
 	    	  }
 	    	  else{
+	    		  // TODO:
 	    		  // execute method to insert new med
 	    		  // newMed(newMedicine, low, high);
 	    		  
@@ -319,6 +309,7 @@ public class GUI extends JFrame implements ActionListener{
 	    	  }
 	      }
 	      if(m.getSource() == dayB){
+	    	  // TODO:
 	    	  // execute method to cycle day
 	    	  // day();
 	    	  
