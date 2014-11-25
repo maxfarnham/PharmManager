@@ -257,7 +257,7 @@ public class GUI extends JFrame implements ActionListener{
 	      }
 	      if(m.getSource() == clearB){
 	    	  
-	    	  /// not working right now
+	    	  // not exactly working right now
 	    	  smallRB.setSelected(false);
 	    	  mediumRB.setSelected(false);
 	    	  largeRB.setSelected(false);
