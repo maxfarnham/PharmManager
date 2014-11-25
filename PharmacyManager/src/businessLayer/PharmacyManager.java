@@ -40,8 +40,8 @@ public class PharmacyManager {
 		overFlag = (int)rs.get(0).get(3);
 		
 		sql = "SELECT SUM(InStock)"  +
-			  "FROM Shipments" +
-			  "WHERE MedicineID = " + medicineID + ";";
+		      "FROM Shipments" +
+	              "WHERE MedicineID = " + medicineID + ";";
 		
 		
 		Object obj = db.executeScalar(sql);
@@ -51,8 +51,8 @@ public class PharmacyManager {
 		else stock = (int)obj;
 		
 		sql = "SELECT ShipmentID, Expired, InStock, Size, ExpDate " +
-			  "FROM Shipments" +
-	          "WHERE MedicineID = " + medicineID + ";";
+	              "FROM Shipments" +
+	              "WHERE MedicineID = " + medicineID + ";";
 		
 		rs = db.executeNonScalar(sql);
 		
@@ -60,7 +60,7 @@ public class PharmacyManager {
 		//fill ArrayList
 		for(ArrayList<Object> shipment : rs){
 			int shpmtID  = (int)shipment.get(0);
-            int expired  = (int)shipment.get(1);
+			int expired  = (int)shipment.get(1);
 			int inStock  = (int)shipment.get(2);
 			int sizeType = (int)shipment.get(3);
 			int expDate  = (int)shipment.get(4);
@@ -105,8 +105,8 @@ public class PharmacyManager {
 		String safeName = name.replace("'", "''");
 		
 		sql = String.format("INSERT INTO Medications"
-				          + "(Name, Sold, LowStockThreshold, OverstockThreshold)"
-				          + "VALUES(%s, %d, %d, %d);", safeName, 0, lowFlag, overFlag);
+				  + "(Name, Sold, LowStockThreshold, OverstockThreshold)"
+			          + "VALUES(%s, %d, %d, %d);", safeName, 0, lowFlag, overFlag);
 		
 		int rowsModified = db.executeNonQuery(sql);
 		
@@ -130,7 +130,7 @@ public class PharmacyManager {
 		
 		sql = 
 		String.format("SELECT MedicineID" +
-					  "FROM Medications" +
+			      "FROM Medications" +
 		              "WHERE Name = %s;", medication);
 		
 		Object medicineID = db.executeScalar(sql);
@@ -139,8 +139,8 @@ public class PharmacyManager {
 		
 		sql = 
 		String.format("INSERT INTO Shipments" +
-					  "(Expired, InStock, ExpDate, Size, MedicineID)" +
-					  "VALUES(%d, %d, %d, %d, %d)", 0, amount, expDate, sizeOfCans, (int)medicineID);
+			      "(Expired, InStock, ExpDate, Size, MedicineID)" +
+			      "VALUES(%d, %d, %d, %d, %d)", 0, amount, expDate, sizeOfCans, (int)medicineID);
 
 		int rowsModified = db.executeNonQuery(sql);
 		
@@ -175,7 +175,7 @@ public class PharmacyManager {
 		
 		sql = 
 		String.format("SELECT MedicineID" +
-					  "FROM Medications" +
+			      "FROM Medications" +
 		              "WHERE Name = %s;", medication);
 				
 		Object medicineID = db.executeScalar(sql);
@@ -184,8 +184,8 @@ public class PharmacyManager {
 				
 		sql = 
 		String.format("SELECT ShipmentID, InStock" +
-					  "FROM Shipments" + 
-					  "WHERE MedicineID = %d AND Size = %d AND Expired = 0;", (int)medicineID, size);
+			      "FROM Shipments" + 
+			      "WHERE MedicineID = %d AND Size = %d AND Expired = 0;", (int)medicineID, size);
 		
 		ArrayList<ArrayList<Object>> rs = db.executeNonScalar(sql);
 		
@@ -201,14 +201,14 @@ public class PharmacyManager {
 			
 			if(dif < 0){ //enough in this shipment
 				sql = String.format("UPDATE Medications" +
-									"SET Sold = Sold + %d" +
-									"WHERE MedicineID = %d;", amount, (int)medicineID);
+						    "SET Sold = Sold + %d" +
+						    "WHERE MedicineID = %d;", amount, (int)medicineID);
 				
 				if(db.executeNonQuery(sql) < 1) return -3; //error ?
 				
 				sql = String.format("UPDATE Shipments" +
-									"SET InStock = %d" +
-									"WHERE ShipmentID = %d;", dif, shipmentID);
+						    "SET InStock = %d" +
+						    "WHERE ShipmentID = %d;", dif, shipmentID);
 				
 				db.executeNonQuery(sql);
 				
@@ -216,13 +216,13 @@ public class PharmacyManager {
 			}
 			else if (dif == 0){ //exact amount in this shipment
 				sql = String.format("UPDATE Medications" +
-									"SET Sold = Sold + %d" +
-									"WHERE MedicineID = %d;", amount, (int)medicineID);
+						    "SET Sold = Sold + %d" +
+						    "WHERE MedicineID = %d;", amount, (int)medicineID);
 				
 				db.executeNonQuery(sql);
 				
 				sql = String.format("DELETE FROM Shipments" +
-									"WHERE ShipmentID = %d;", shipmentID);
+						    "WHERE ShipmentID = %d;", shipmentID);
 				
 				db.executeNonQuery(sql);
 				
@@ -230,13 +230,13 @@ public class PharmacyManager {
 			}
 			else{ //not enough in this shipment
 				sql = String.format("UPDATE Medications" +
-									"SET Sold = Sold + %d" +
-									"WHERE MedicineID = %d;", inStock, (int)medicineID);
+						    "SET Sold = Sold + %d" +
+						    "WHERE MedicineID = %d;", inStock, (int)medicineID);
 	
 				db.executeNonQuery(sql);
 	
 				sql = String.format("DELETE FROM Shipments" +
-									"WHERE ShipmentID = %d;", shipmentID);
+						    "WHERE ShipmentID = %d;", shipmentID);
 	
 				db.executeNonQuery(sql);
 				
