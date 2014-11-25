@@ -1,4 +1,4 @@
-package MainClasses;
+package businessLayer;
 
 import java.util.ArrayList;
 

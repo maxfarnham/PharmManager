@@ -1,4 +1,4 @@
-package MainClasses;
+package businessLayer;
 
 public class SmallBulk extends Bulk {
 
