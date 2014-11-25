@@ -152,7 +152,9 @@ public class PharmacyManager {
 		try {
 			Medicine med = getMedicine(medication);
 
-			//BUG - do we want this to decrement all our stock even though the sale can't be completed? Should warn before hand, or roll back the purchse if there's not enough
+			//BUG - do we want this to decrement all our stock even though the sale can't be completed? 
+			//Should warn before hand, or roll back the purchse if there's not enough
+			//Justo: Ideally, you warn and let the user decide if they want to take what they can or nothing at all. 
 			Iterator iter = med.getShipmentIterator();
 			while(iter.next() && amount > 0) {
 				Shipment shp = (Shipment) iter.curr();
