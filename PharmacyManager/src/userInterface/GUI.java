@@ -257,12 +257,14 @@ public class GUI extends JFrame implements ActionListener{
 	      }
 	      if(m.getSource() == clearB){
 	    	  
-	    	  // not exactly working right now
-	    	  smallRB.setSelected(false);
-	    	  mediumRB.setSelected(false);
-	    	  largeRB.setSelected(false);
-	    	  
-	    	  displayTA.setText("reset");
+	    	  sizeGroup.clearSelection();
+	    	  medicineTF.setText("");
+	    	  newMedicineTF.setText("");
+	    	  numSpin.setValue(0);
+	    	  expSpin.setValue(0);
+	    	  lowSpin.setValue(0);
+	    	  overSpin.setValue(0);
+	    	  displayTA.setText("");
 	      }
 	      
 	  }
