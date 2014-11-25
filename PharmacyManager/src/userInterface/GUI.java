@@ -1,34 +1,38 @@
 package userInterface;
 
-import dataLayer.*;
-import javax.swing.*;
 
+/*
+import dataLayer.*;
 import java.util.Scanner;
 import java.awt.Color;
-import java.awt.Container;
+
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.*;
 import java.awt.event.*;
+*/
+import javax.swing.*;
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class GUI extends JFrame implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
 	private JTextArea displayTA;
-	private JSpinner numSpin, expSpin;
-	private JLabel medicineL, numberL, expireL;
-	private JTextField medicineTF;
-	private JButton restockB, saleB, reportB;
+	private JSpinner numSpin, expSpin, lowSpin, overSpin;
+	private JLabel medicineL, numberL, expireL, newMedicineL, lowL, overL;
+	private JTextField medicineTF, newMedicineTF;
+	private JButton restockB, saleB, reportB, dayB, newMedB, clearB;
 	private JRadioButton smallRB, mediumRB, largeRB;
 	ButtonGroup sizeGroup;
 	
 	public void GUILaunch(){
 		int col1 = 20;
+		int row1 = 20;  // index for col1
 		int col2 = 330;
 		int col3 = 455;
-		int row = 20;
+		int row23 = 20; // index for col2 and col3
 		
 		setTitle("Pharmacy Manager");
 		setSize(600, 550);
@@ -36,7 +40,6 @@ public class GUI extends JFrame implements ActionListener{
 		
 		Container c = getContentPane();
 		c.setLayout(null);
-		
 
 		////////////////////////////
 		// spinner properties
@@ -44,37 +47,50 @@ public class GUI extends JFrame implements ActionListener{
 		int max = 2147483647; // max int
 		int min = 0;
 		int step = 1;
-			
+		
+		///////////////////	
 		displayTA = new JTextArea();
 		displayTA.setWrapStyleWord(true);
 		displayTA.setLineWrap(true);
 		displayTA.setEditable(false);
-		displayTA.setLocation(col1, 20);
+		displayTA.setLocation(col1, row1);
 		displayTA.setSize(300, 400);
 		c.add(displayTA);
+		row1 += 400 + 20;
+		
+		///////////////////
+  
+		reportB = new JButton("Report");
+		reportB.setSize(95, 30);
+		reportB.setLocation(col1, row1);
+		c.add(reportB);
+		reportB.addActionListener(this);
+		
+		///////////////////
+		
+		dayB = new JButton("End of Day");
+		dayB.setSize(95, 30);
+		dayB.setLocation(col1+100, row1);
+		c.add(dayB);
+		dayB.addActionListener(this);
+		///////////////////
+				
+		dayB = new JButton("End of Day");
+		dayB.setSize(95, 30);
+		dayB.setLocation(col1+100, row1);
+		c.add(dayB);
+		dayB.addActionListener(this);
 		
 		///////////////////
 		medicineL = new JLabel("Medicine: ");
 		medicineL.setSize(125, 25);
-		medicineL.setLocation(col2, row);
+		medicineL.setLocation(col2, row23);
 		c.add(medicineL);
 		medicineTF = new JTextField();
 		medicineTF.setSize(100,25);
-		medicineTF.setLocation(col3, row);
+		medicineTF.setLocation(col3, row23);
 		c.add(medicineTF);
-		row += 40;
-		////////////////////////////
-		expireL = new JLabel("Days until expiration: ");
-		SpinnerModel expModel;
-		expModel = new SpinnerNumberModel(initial, min, max, step);
-		expireL.setSize(125,30);
-		expireL.setLocation(col2, row);
-		c.add(expireL);
-		expSpin = new JSpinner(expModel);
-		expSpin.setSize(100,30);
-		expSpin.setLocation(col3, row);		
-		c.add(expSpin); 
-		row += 40;
+		row23 += 40;
 		///////////////////////
 		smallRB = new JRadioButton("Small");
 		mediumRB = new JRadioButton("Medium");
@@ -82,9 +98,9 @@ public class GUI extends JFrame implements ActionListener{
 		smallRB.setSize(75,25);
 		mediumRB.setSize(75,25);
 		largeRB.setSize(75,25);
-		smallRB.setLocation(col2, row);
-		mediumRB.setLocation(col2+75, row);
-		largeRB.setLocation(col2+150, row);		
+		smallRB.setLocation(col2, row23);
+		mediumRB.setLocation(col2+75, row23);
+		largeRB.setLocation(col2+150, row23);		
 		
 		sizeGroup = new ButtonGroup();
 	    sizeGroup.add(smallRB);
@@ -94,43 +110,108 @@ public class GUI extends JFrame implements ActionListener{
 		c.add(smallRB);
 		c.add(mediumRB);
 		c.add(largeRB);
-		row += 40;
+		row23 += 40;
 		///////////////////////
 		SpinnerModel numModel;
 		numModel = new SpinnerNumberModel(initial, min, max, step);
 		
 		numberL = new JLabel("Quantity: ");
 		numberL.setSize(125,30);
-		numberL.setLocation(col2, row);
+		numberL.setLocation(col2, row23);
 		c.add(numberL);
 		numSpin = new JSpinner(numModel);
 		numSpin.setSize(100,30);
-		numSpin.setLocation(col3, row);		
+		numSpin.setLocation(col3, row23);		
 		c.add(numSpin);
-		row += 40;
+		row23 += 40;
+		
 		///////////////////
 		saleB = new JButton("Sale");
 		saleB.setSize(100, 30);
-		saleB.setLocation(col3, row);
+		saleB.setLocation(col3, row23);
 		c.add(saleB);
 		saleB.addActionListener(this);
-		row += 40;
+		row23 += 40;
+		////////////////////////////
+		JSeparator HBreak1 = new JSeparator(JSeparator.HORIZONTAL);
+		HBreak1.setSize(225, 5);
+		HBreak1.setLocation(col2, row23 - 5);
+		c.add(HBreak1);
+		///////////////////////
+		expireL = new JLabel("Days until expiration: ");
+		expireL.setSize(125,30);
+		expireL.setLocation(col2, row23);
+		c.add(expireL);
+		SpinnerModel expModel;
+		expModel = new SpinnerNumberModel(initial, min, max, step);
+		expSpin = new JSpinner(expModel);
+		expSpin.setSize(100,30);
+		expSpin.setLocation(col3, row23);		
+		c.add(expSpin); 
+		row23 += 40;
 		///////////////////////////  
 		restockB = new JButton("Restock");
 		restockB.setSize(100, 30);
-		restockB.setLocation(col3, row);
+		restockB.setLocation(col3, row23);
 		c.add(restockB);
 		restockB.addActionListener(this);
-		row += 40;
-		///////////////////////////  
-		reportB = new JButton("Report");
-		reportB.setSize(100, 30);
-		reportB.setLocation(col3, row);
-		c.add(reportB);
-		reportB.addActionListener(this);
-		row += 40;
+		row23 += 40;
 		////////////////////////////
+		JSeparator HBreak2 = new JSeparator(JSeparator.HORIZONTAL);
+		HBreak2.setSize(225, 5);
+		HBreak2.setLocation(col2, row23 - 5);
+		c.add(HBreak2);
+		///////////////////////////
+		newMedicineL = new JLabel("New Medicine: ");
+		newMedicineL.setSize(125, 25);
+		newMedicineL.setLocation(col2, row23);
+		c.add(newMedicineL);
+		newMedicineTF = new JTextField();
+		newMedicineTF.setSize(100,25);
+		newMedicineTF.setLocation(col3, row23);
+		c.add(newMedicineTF);
+		row23 += 40;	
+		
+		///////////////////////////
+		
+		lowL = new JLabel("Low Stock Threshold");
+		lowL.setSize(125, 30);
+		lowL.setLocation(col2, row23);
+		c.add(lowL);
+		SpinnerModel lowModel;
+		lowModel = new SpinnerNumberModel(initial, min, max, step);
+		lowSpin = new JSpinner(lowModel);
+		lowSpin.setSize(100, 30);
+		lowSpin.setLocation(col3, row23);
+		c.add(lowSpin);
+		row23 += 40;
+		/////////////////////////////
+		overL = new JLabel("Over Stock Threshold");
+		overL.setSize(125, 30);
+		overL.setLocation(col2, row23);
+		c.add(overL);
+		SpinnerModel overModel;
+		overModel = new SpinnerNumberModel(initial, min, max, step);
+		overSpin = new JSpinner(overModel);
+		overSpin.setSize(100, 30);
+		overSpin.setLocation(col3, row23);
+		c.add(overSpin);
+		row23 += 40;
 
+		///////////////////////////  
+		newMedB = new JButton("Add New");
+		newMedB.setSize(100, 30);
+		newMedB.setLocation(col3, row23);
+		c.add(newMedB);
+		newMedB.addActionListener(this);
+		row23 += 40;
+		/////////////////////////////
+		clearB = new JButton("Clear All");
+		clearB.setSize(100, 30);
+		clearB.setLocation(col3, row1);
+		c.add(clearB);
+		clearB.addActionListener(this);
+		
 		setVisible(true);
 	  }
 	
@@ -144,9 +225,13 @@ public class GUI extends JFrame implements ActionListener{
 		  if(largeRB.isSelected())
 			  size = 3;
 		  String medicine = medicineTF.getText();
+		  String newMedicine = newMedicineTF.getText();
 		  int quantity = (int)numSpin.getValue();
 		  String quantityStr = String.format("%d", quantity);
-		  
+		  int low = (int)lowSpin.getValue();
+		  String lowStr = String.format("%d", low);
+		  int over = (int)overSpin.getValue();
+		  String overStr = String.format("%d", over);
 	      if (m.getSource() == restockB){
 	    		  
 	    	  //DataLayer.executeQuery("SELECT * FROM MEDICINE");
@@ -166,6 +251,20 @@ public class GUI extends JFrame implements ActionListener{
 		      String str = String.format("%d", next);
 		      
 		      displayTA.setText(str);  
+	      }
+	      if(m.getSource() == newMedB){
+	    	  displayTA.setText(newMedicine + " " + lowStr + " " + overStr);
+	      }
+	      if(m.getSource() == clearB){
+	    	  
+	    	  sizeGroup.clearSelection();
+	    	  medicineTF.setText("");
+	    	  newMedicineTF.setText("");
+	    	  numSpin.setValue(0);
+	    	  expSpin.setValue(0);
+	    	  lowSpin.setValue(0);
+	    	  overSpin.setValue(0);
+	    	  displayTA.setText("");
 	      }
 	      
 	  }
