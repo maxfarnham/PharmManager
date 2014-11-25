@@ -1,4 +1,4 @@
-package MainClasses;
+package businessLayer;
 
 public abstract class Bulk {
 	private int expDate;
