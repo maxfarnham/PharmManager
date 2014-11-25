@@ -29,7 +29,6 @@ public class GUI extends JFrame implements ActionListener{
 	private JButton restockB, saleB, reportB, dayB, newMedB, clearB;
 	private JRadioButton smallRB, mediumRB, largeRB;
 	private ButtonGroup sizeGroup;
-	//private Font header = new Font("", null, 8);
 	
 	public void printToScreen(String str){
 		displayTA.setText(str);
@@ -230,13 +229,21 @@ public class GUI extends JFrame implements ActionListener{
 	
 	  public void actionPerformed(ActionEvent m)
 	  {
+		  // Grab data from interface
 		  int size = 0;
-		  if(smallRB.isSelected())
+		  String sizeStr = null;
+		  if(smallRB.isSelected()){
 			  size = 1;
-		  if(mediumRB.isSelected())
+			  sizeStr = "small";
+		  }
+		  if(mediumRB.isSelected()){
 			  size = 2;
-		  if(largeRB.isSelected())
+			  sizeStr = "medium";
+		  }
+		  if(largeRB.isSelected()){
 			  size = 3;
+			  sizeStr = "large";
+		  }
 		  String medicine = medicineTF.getText();
 		  String newMedicine = newMedicineTF.getText();
 		  int quantity = (int)numSpin.getValue();
@@ -247,6 +254,7 @@ public class GUI extends JFrame implements ActionListener{
 		  String lowStr = String.format("%d", low);
 		  int over = (int)overSpin.getValue();
 		  String overStr = String.format("%d", over);
+		  // Change all text color to black
 		  smallRB.setForeground(Color.black);
 		  mediumRB.setForeground(Color.black);
 		  largeRB.setForeground(Color.black);
@@ -256,6 +264,7 @@ public class GUI extends JFrame implements ActionListener{
 		  newMedicineL.setForeground(Color.black);
 		  lowL.setForeground(Color.black);
 		  overL.setForeground(Color.black);
+		  
 		  if(m.getSource() == saleB){
 			  // sale needs Medicine name, qty, size, maybe
 			  if(medicine.equals("") || size == 0 || quantity == 0){
@@ -266,7 +275,10 @@ public class GUI extends JFrame implements ActionListener{
 	    		  medicineL.setForeground(Color.red);
 			  }
 			  else{
-				  printToScreen(medicine);
+				  // execute sale method
+				  // sale(medicine, quantity, size);
+				  
+				  printToScreen(medicine + " " + sizeStr + " " + quantityStr);
 			      //displayTA.setText(medicine);    
 			  }
 	    	  //String result = commandHandler.executeNonScalar("SELECT * FROM MEDICINE").toString();
@@ -285,20 +297,11 @@ public class GUI extends JFrame implements ActionListener{
 	    	  }
 	    	  else{
 	    		  // execute method to restock
-	    		  printToScreen("restock");
-	    		  //displayTA.setText(medicine + "\n" + quantityStr + " " + size); // sample
+	    		  // restock(medicine, quantity, size, expire);
 	    		  
+	    		  printToScreen("restockB" + " " + medicine + " " + quantityStr + " " + sizeStr + " " + expStr);
+	    		  //displayTA.setText("restockB" + medicine + " " + quantityStr + " " + size + " " + expStr); // sample	  
 	    	  }
-	      }
-	      
-	      if(m.getSource() == reportB){
-	    	  //String result = d.executeNonScalar("SELECT * FROM MEDICINE").toString();
-		      int next = (int)numSpin.getValue();
-		      String str = String.format("%d", next);
-		      
-		      printToScreen(str);
-		      
-		      //displayTA.setText(str);  
 	      }
 	      if(m.getSource() == newMedB){
 	    	  // New medicine needs newMed name, low threshold and over threshold
@@ -308,9 +311,28 @@ public class GUI extends JFrame implements ActionListener{
 	    		  overL.setForeground(Color.red);
 	    	  }
 	    	  else{
-	    		  printToScreen(newMedicine + " " + lowStr + " " + overStr);
-	    		  //displayTA.setText(newMedicine + " " + lowStr + " " + overStr);
+	    		  // execute method to insert new med
+	    		  // newMed(newMedicine, low, high);
+	    		  
+	    		  printToScreen("newMedB " + newMedicine + " " + lowStr + " " + overStr);
+	    		  //displayTA.setText("newMedB" + newMedicine + " " + lowStr + " " + overStr);
 	    	  }
+	      }
+	      if(m.getSource() == dayB){
+	    	  // execute method to cycle day
+	    	  // day();
+	    	  
+	    	  printToScreen("dayB");
+	    	  //displayTA.setText("dayB");
+	      }
+	      if(m.getSource() == reportB){
+	    	  // execute method to run reports
+	    	  // report();
+	    	  
+	    	  //String result = d.executeNonScalar("SELECT * FROM MEDICINE").toString();
+		      printToScreen("reportB");
+		      
+		      //displayTA.setText("reportB");  
 	      }
 	      if(m.getSource() == clearB){
 	    	  
@@ -324,621 +346,12 @@ public class GUI extends JFrame implements ActionListener{
 	    	  printToScreen("");
 	    	  //displayTA.setText("");
 	      }
-	      
 	  }
-	
-	
 	public static void main (String[] args){
 		GUI newGui = new GUI();
 		newGui.GUILaunch();
-		
-		/*
-		JFrame theGUI = new JFrame();
-		Scanner reader = new Scanner(System.in);
-		GUIhelper newGui = new GUIhelper();
-		//newGui.init();
-		theGUI.setSize(200, 300);
-		theGUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		theGUI.setTitle("GUI Window");
-		theGUI.setVisible(true);
-		*/
-		
 	}
-
-
 }
 
 
 
-
-/*import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.*;
-
-import java.awt.*;
-import java.awt.event.*;
-*/
-/*
-public class GUIhelper extends JApplet implements ItemListener, ActionListener
-{
-  private JCheckBox tomatoCB, greenPepperCB, blackOlivesCB, mushroomsCB, extraCheeseCB, pepperoniCB, sausageCB;
-  private JRadioButton smallRB, mediumRB, largeRB;
-  private ButtonGroup sizeGroup;
-  private JComboBox crustDD;
-  private JTextArea orderTA;
-  private String blankCrust = " ",thinCrust = "Thin Crust", panCrust = "Pan Crust", deepDishCrust = "Deep Dish";
-  private String[] crustNames = {blankCrust, thinCrust, panCrust, deepDishCrust};
-  private JLabel nameLabel, toppingsLabel, crustLabel, sizeLabel;
-
-  private int topCount = 0;
-  private int sizeCount = 0;
-  
-  private String toppings = "Toppings: ";
-  private String crust = "Crust: ";
-  private String size = "Size: ";
-  private String dashes = "--------------------------------------------";
-  private Font header = new Font("", Font.ITALIC + Font.BOLD, 12);  // Header formatting
-  
-  private JButton resetB;
-  
-  
-  
-  public void init() 
-  {
-      Container c = getContentPane();
-      c.setLayout(null);
-      setSize(450, 450);
-      setName("Pizza Shop");
-      nameLabel = new JLabel("Mama Jake's Authentic Italian Restaurant");
-      nameLabel.setFont(new Font("", Font.ITALIC + Font.BOLD, 18));
-      nameLabel.setForeground(Color.red);
-      
-      resetB = new JButton("Reset");
-             
-      toppingsLabel = new JLabel("Each topping: $1.50");
-      toppingsLabel.setFont(header);
-      toppingsLabel.setForeground(Color.red);
-      crustLabel = new JLabel("Crust:");
-      crustLabel.setFont(header);
-      crustLabel.setForeground(Color.red);
-      sizeLabel = new JLabel("Size:");
-      sizeLabel.setFont(header);
-      sizeLabel.setForeground(Color.red);
-      
-      tomatoCB = new JCheckBox("Tomatos");
-      greenPepperCB = new JCheckBox("Green Peppers");
-      blackOlivesCB = new JCheckBox("Black Olives");
-      mushroomsCB = new JCheckBox("Mushrooms");
-      extraCheeseCB = new JCheckBox("Extra Cheese");
-      pepperoniCB = new JCheckBox("Pepperoni");
-      sausageCB = new JCheckBox("Sausage");
-      
-      smallRB = new JRadioButton("Small $6.50");
-      mediumRB = new JRadioButton("Medium $8.00");
-      largeRB = new JRadioButton("Large $10.00");
-      
-      orderTA = new JTextArea();
-      orderTA.setWrapStyleWord(true);
-      orderTA.setLineWrap(true);
-      orderTA.setEditable(false);
-      
-      
-      crustDD = new JComboBox<String>(crustNames);
-      crustDD.setMaximumRowCount(4);
-      
-      // Item sizes and locations-------------
-      nameLabel.setSize(400, 30);
-      nameLabel.setLocation(20, 5);
-      
-      // Reset --------
-      resetB.setSize(100, 30);
-      resetB.setLocation(300, 250);
-              
-      // Toppings  ---
-      toppingsLabel.setSize(130, 30);
-      tomatoCB.setSize(120, 30);
-      greenPepperCB.setSize(120, 30);
-      blackOlivesCB.setSize(120, 30);
-      mushroomsCB.setSize(120, 30);
-      extraCheeseCB.setSize(120, 30);
-      pepperoniCB.setSize(120, 30);
-      sausageCB.setSize(120, 30);
-      
-      toppingsLabel.setLocation(20, 30);
-      tomatoCB.setLocation(30, 70);
-      greenPepperCB.setLocation(30, 100);
-      blackOlivesCB.setLocation(30, 130);
-      mushroomsCB.setLocation(30, 160);
-      extraCheeseCB.setLocation(30, 190);
-      pepperoniCB.setLocation(30, 220);
-      sausageCB.setLocation(30, 250);
-      
-      // Crust ----
-      crustLabel.setSize(100, 30);
-      crustDD.setSize(100, 30);
-      
-      crustLabel.setLocation(150, 30);
-      crustDD.setLocation(170, 70);
-              
-      // Size ----
-      sizeLabel.setSize(120, 30);
-      smallRB.setSize(120, 30);
-      mediumRB.setSize(120, 30);
-      largeRB.setSize(120, 30);
-      
-      sizeLabel.setLocation(280, 30);
-      smallRB.setLocation(300, 70);
-      mediumRB.setLocation(300, 100);
-      largeRB.setLocation(300, 130); 
-      
-      // Order summary / Text Area
-      orderTA.setLocation(20, 300);
-      orderTA.setSize(400, 120);
-      orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-      
-      // adds---------------------------
-      c.add(nameLabel);
-      
-      c.add(resetB);
-
-      c.add(toppingsLabel);
-      c.add(tomatoCB);
-      c.add(greenPepperCB);
-      c.add(blackOlivesCB);
-      c.add(mushroomsCB);
-      c.add(extraCheeseCB);
-      c.add(pepperoniCB);
-      c.add(sausageCB);
-      
-      c.add(sizeLabel);
-      c.add(smallRB);
-      c.add(mediumRB);
-      c.add(largeRB);
-      
-      c.add(crustLabel);
-      c.add(crustDD);
-      
-      c.add(orderTA);
-      // grouping buttons-----------------
-      
-      sizeGroup = new ButtonGroup();
-      sizeGroup.add(smallRB);
-      sizeGroup.add(mediumRB);
-      sizeGroup.add(largeRB);
-      
-      // item listeners------------------
-      resetB.addActionListener(this);
-      
-      tomatoCB.addItemListener(this);
-      greenPepperCB.addItemListener(this);
-      blackOlivesCB.addItemListener(this);
-      mushroomsCB.addItemListener(this);
-      extraCheeseCB.addItemListener(this);
-      pepperoniCB.addItemListener(this);
-      sausageCB.addItemListener(this);
-      
-      crustDD.addItemListener(this);
-      
-      smallRB.addItemListener(this);
-      mediumRB.addItemListener(this);
-      largeRB.addItemListener(this);
-  }
-  public void itemStateChanged(ItemEvent m)
-  {
-      if(m.getSource() == tomatoCB)
-      {        
-          if (m.getStateChange() == ItemEvent.SELECTED)
-          {
-             toppings = toppings.replaceAll("\\. ", ""); // to get rid of the period so we can add one later
-              
-             toppings = toppings + ", tomatos. ";
-             toppings = toppings.replaceAll(": , ", ": "); // to make sure we don't have any commas after "Toppings: "
-             topCount++;
-             orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-          }
-          
-          if (m.getStateChange() == ItemEvent.DESELECTED)
-          {
-              toppings = toppings.replaceAll("tomatos", "");
-              
-              toppings = toppings.replaceAll(", , ", ", ");
-              toppings = toppings.replaceAll(", . ", ". ");
-              toppings = toppings.replaceAll(":. " , ": ");
-              toppings = toppings.replaceAll(": . " , ": ");
-              topCount--;
-              orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-          }
-          
-      }  
-      if(m.getSource() == greenPepperCB)
-      {        
-          if (m.getStateChange() == ItemEvent.SELECTED)
-          {
-              toppings = toppings.replaceAll("\\. ", ""); // to get rid of the period so we can add one later
-              
-              toppings = toppings + ", green peppers. " ;
-              toppings = toppings.replaceAll(": , ", ": "); // to make sure we don't have any commas after "Toppings: "
-              topCount++;
-              orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-              
-          }
-          
-          if (m.getStateChange() == ItemEvent.DESELECTED)
-          {
-              toppings = toppings.replaceAll("green peppers", "");
-              toppings = toppings.replaceAll(", , ", ", ");
-              toppings = toppings.replaceAll(", . ", ". ");
-              toppings = toppings.replaceAll(": . ", ": ");
-              topCount--;
-              orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-              
-          }
-          
-      }  
-      if(m.getSource() == blackOlivesCB)
-      {        
-          if (m.getStateChange() == ItemEvent.SELECTED)
-          {
-             toppings = toppings.replaceAll("\\. ", ""); // to get rid of the period so we can add one later
-              
-             toppings = toppings + ", black olives. ";
-             toppings = toppings.replaceAll(": , ", ": "); // to make sure we don't have any commas after "Toppings: "
-             topCount++; 
-             orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-             
-          }
-          
-          if (m.getStateChange() == ItemEvent.DESELECTED)
-          {
-              toppings = toppings.replaceAll("black olives", "");
-              
-              toppings = toppings.replaceAll(", , ", ", ");
-              toppings = toppings.replaceAll(", . ", ". ");
-              toppings = toppings.replaceAll(":. " , ": ");
-              toppings = toppings.replaceAll(": . " , ": ");
-              topCount--;
-              orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-              
-          }
-          
-      }
-      if(m.getSource() == mushroomsCB)
-      {        
-          if (m.getStateChange() == ItemEvent.SELECTED)
-          {
-             toppings = toppings.replaceAll("\\. ", ""); // to get rid of the period so we can add one later
-              
-             toppings = toppings + ", mushrooms. ";
-             toppings = toppings.replaceAll(": , ", ": "); // to make sure we don't have any commas after "Toppings: "
-             topCount++; 
-             orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-
-          }
-          
-          if (m.getStateChange() == ItemEvent.DESELECTED)
-          {
-              toppings = toppings.replaceAll("mushrooms", "");
-              
-              toppings = toppings.replaceAll(", , ", ", ");
-              toppings = toppings.replaceAll(", . ", ". ");
-              toppings = toppings.replaceAll(":. " , ": ");
-              toppings = toppings.replaceAll(": . " , ": ");
-              topCount--;
-              orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-              
-          }
-          
-      }
-      if(m.getSource() == extraCheeseCB)
-      {        
-          if (m.getStateChange() == ItemEvent.SELECTED)
-          {
-             toppings = toppings.replaceAll("\\. ", ""); // to get rid of the period so we can add one later
-              
-             toppings = toppings + ", extra cheese. ";
-             toppings = toppings.replaceAll(": , ", ": "); // to make sure we don't have any commas after "Toppings: "
-             topCount++; 
-             orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-             
-          }
-          
-          if (m.getStateChange() == ItemEvent.DESELECTED)
-          {
-              toppings = toppings.replaceAll("extra cheese", "");
-              
-              toppings = toppings.replaceAll(", , ", ", ");
-              toppings = toppings.replaceAll(", . ", ". ");
-              toppings = toppings.replaceAll(":. " , ": ");
-              toppings = toppings.replaceAll(": . " , ": ");
-              topCount--;
-              orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-              
-          }
-          
-      }
-      if(m.getSource() == pepperoniCB)
-      {        
-          if (m.getStateChange() == ItemEvent.SELECTED)
-          {
-             toppings = toppings.replaceAll("\\. ", ""); // to get rid of the period so we can add one later
-              
-             toppings = toppings + ", pepperoni. ";
-             toppings = toppings.replaceAll(": , ", ": "); // to make sure we don't have any commas after "Toppings: "
-             topCount++; 
-             orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-             
-          }
-          
-          if (m.getStateChange() == ItemEvent.DESELECTED)
-          {
-              toppings = toppings.replaceAll("pepperoni", "");
-              
-              toppings = toppings.replaceAll(", , ", ", ");
-              toppings = toppings.replaceAll(", . ", ". ");
-              toppings = toppings.replaceAll(":. " , ": ");
-              toppings = toppings.replaceAll(": . " , ": ");
-              topCount--;
-              orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-              
-          }
-          
-      }
-      if(m.getSource() == sausageCB)
-      {        
-          if (m.getStateChange() == ItemEvent.SELECTED)
-          {
-             toppings = toppings.replaceAll("\\. ", ""); // to get rid of the period so we can add one later
-              
-             toppings = toppings + ", sausage. ";
-             toppings = toppings.replaceAll(": , ", ": "); // to make sure we don't have any commas after "Toppings: "
-             topCount++; 
-             orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-             
-          }
-          
-          if (m.getStateChange() == ItemEvent.DESELECTED)
-          {
-              toppings = toppings.replaceAll("sausage", "");
-              
-              toppings = toppings.replaceAll(", , ", ", ");
-              toppings = toppings.replaceAll(", . ", ". ");
-              toppings = toppings.replaceAll(":. " , ": ");
-              toppings = toppings.replaceAll(": . " , ": ");
-              topCount--;
-              orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-              
-          }
-          
-      }
-      if(m.getSource() == crustDD)
-      {
-          if(crustNames[crustDD.getSelectedIndex()] == thinCrust)
-          {
-              crust = crust.replaceAll(thinCrust, "");
-              crust = crust.replaceAll(deepDishCrust, "");
-              crust = crust.replaceAll(panCrust, "");
-              
-              crust = crust + "Thin Crust";
-              
-              orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-          }
-      }
-      if(m.getSource() == crustDD)
-      {
-          if(crustNames[crustDD.getSelectedIndex()] == deepDishCrust)
-          {
-              crust = crust.replaceAll(thinCrust, "");
-              crust = crust.replaceAll(deepDishCrust, "");
-              crust = crust.replaceAll(panCrust, "");
-              
-              crust = crust + "Deep Dish";
-              
-              orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-          }
-      }
-      if(m.getSource() == crustDD)
-      {
-          if(crustNames[crustDD.getSelectedIndex()] == panCrust)
-          {
-              crust = crust.replaceAll(thinCrust, "");
-              crust = crust.replaceAll(deepDishCrust, "");
-              crust = crust.replaceAll(panCrust, "");
-              
-              crust = crust + panCrust;
-              
-              orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-          }
-      }
-      if(m.getSource() == crustDD)
-      {
-          if(crustNames[crustDD.getSelectedIndex()] == blankCrust)
-          {
-              crust = crust.replaceAll(thinCrust, "");
-              crust = crust.replaceAll(deepDishCrust, "");
-              crust = crust.replaceAll(panCrust, "");
-                              
-              orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-          }
-      }
-      if(m.getSource() == smallRB)
-      {        
-         size = "Size: Small";
-         sizeCount = 1;
-         orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-      }
-      
-      if(m.getSource() == mediumRB)
-      {        
-         size = "Size: Medium";
-         sizeCount = 2;
-         orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-      }
-      
-      if(m.getSource() == largeRB)
-      {        
-         size = "Size: Large";
-         sizeCount = 3;
-         orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-      }
-      
-  }
-  private String totalStr(int n, int m) // n refers to size, m is number of toppings
-  {
-      double cost = 0;
-      if(n == 0)
-      {
-          cost = 0;
-      }
-      if(n == 1)
-      {
-          cost = 6.5;
-      }
-      if(n == 2)
-      {
-          cost = 8.50;
-      }
-      if(n == 3)
-      {
-          cost = 10.00;
-      }
-      
-      cost = cost + (m * 1.5);
-      return String.format("Total: $%.2f", cost);
-  }
-  
-  public void actionPerformed(ActionEvent m)
-  {
-              
-      //smallRB.setSelected(false);  // Doesn't work?  not sure why not...
-      //mediumRB.setSelected(false);
-      //largeRB.setSelected(false);
-      
-      sizeGroup.clearSelection();
-      
-      crustDD.setSelectedIndex(0);
-      
-      tomatoCB.setSelected(false);
-      greenPepperCB.setSelected(false);
-      blackOlivesCB.setSelected(false);
-      mushroomsCB.setSelected(false);
-      extraCheeseCB.setSelected(false);
-      pepperoniCB.setSelected(false);
-      sausageCB.setSelected(false);
-      
-      topCount = 0;
-      sizeCount = 0;
-      
-      String toppings = "Toppings: ";
-      String crust = "Crust: ";
-      String size = "Size: ";
-      
-      orderTA.setText(size + "\n" + crust + "\n" + toppings + "\n" + dashes + "\n" + totalStr(sizeCount, topCount));
-      
-  }
-}
-*/
-
-/*{
-	private JTextField userTF, countTF;
-    private JLabel titleLabel, inputLabel, countLabel;
-    private JButton calculateB, resetB;
-    
-    private int count = 0;
-    private int index = 0;
-    
-    public void init() 
-    {
-        Container c = getContentPane();
-        c.setLayout(null);
-        
-        titleLabel = new JLabel("Pharmacy Manager");
-        inputLabel = new JLabel("Enter in a word: ");
-        countLabel = new JLabel("Vowels: ");
-        
-        resetB = new JButton("Reset");
-        calculateB = new JButton("Calculate");       
-        
-               
-        titleLabel.setSize(100, 30);
-        titleLabel.setLocation(20, 5);
-        inputLabel.setSize(100, 30);
-        inputLabel.setLocation(20, 35);
-        countLabel.setSize(100, 30);
-        countLabel.setLocation(20, 65);
-        //Buttons
-        resetB.setSize(100, 30);
-        resetB.setLocation(120, 95);
-                
-        calculateB.setSize(100, 30);
-        calculateB.setLocation(120, 125);
-        
-        userTF = new JTextField(6);
-        userTF.setLocation(120, 35);
-        userTF.setSize(100, 30);
-        
-        countTF = new JTextField(6);
-        countTF.setLocation(120, 65);
-        countTF.setSize(100, 30);
-        countTF.setEditable(false);
-        
-        // adds---------------------------
-        c.add(titleLabel);
-        c.add(inputLabel);
-        c.add(countLabel);
-        
-        c.add(resetB);
-        c.add(calculateB);
-        
-        c.add(userTF);
-        c.add(countTF);
-        
-        resetB.addActionListener(this);
-        calculateB.addActionListener(this);
-        
-        
-    }
-    public void actionPerformed(ActionEvent m)
-    {
-        if(m.getActionCommand().equals("Calculate"))
-        {
-            String userStr = userTF.getText();
-            countTF.setText("" + vowelCount(userStr));
-        }
-        if(m.getActionCommand().equals("Reset"))
-        {
-            userTF.setText("");
-            countTF.setText("");
-            count =  0;
-            index = 0;
-        }
-    }
-    public int vowelCount(String x)
-    {
-        int length = x.length();
-        length--;
-        if(index > length)
-            return count;
-        char ch1 = x.charAt(index);
-        
-        //ch1 = toLowerCase(ch1);
-        
-        if(ch1 == 'a' || ch1 == 'e' || ch1 == 'i' || ch1 == 'o' || ch1 == 'u')
-        {
-            count++;
-            index++;
-            return vowelCount(x);
-        }
-        index++;
-        return vowelCount(x);
-    }    
-    
-	//@Override
-	//public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	//}
-
-}
-*/
