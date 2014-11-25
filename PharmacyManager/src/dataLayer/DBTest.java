@@ -7,7 +7,7 @@ public class DBTest {
 	 public static void main( String args[] )
 	  {
 		 create(); // create and set up database if one doesn't exist
-				 
+		 
 		 // inserting/executeNonQuery
 		 executeNonQuery("INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) " +
                  "VALUES (1, 'Paul', 32, 'California', 20000.00 );");
@@ -44,7 +44,6 @@ public class DBTest {
 			 //	 System.out.print(testArrayList.get(i).get(j) + " ");
 			 //}
 			 //System.out.print("\n");
-			 
 		 }
 		 
 		 
@@ -69,7 +68,16 @@ public class DBTest {
 			 System.out.println("rs was Null!");			 
 		 }
 		 System.out.println("Done");
+		 // Now using commandHandler...
 		 
+		 
+		 commandHandler.create();
+		 commandHandler.executeNonQuery("INSERT INTO MEDICINE (MedicineID, Name, LowStockThreshold, OverStockThreshold)" +
+			 							"VALUES(1, 'Asprin', 2, 5);");
+		 commandHandler.executeNonQuery("INSERT INTO MEDICINE (MedicineID, Name, LowStockThreshold, OverStockThreshold)" +
+				 						"VALUES(2, 'Tylenol', 6, 77);");
+		 System.out.println(commandHandler.executeNonScalar("Select * from Medicine"));
+	
 	  }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	 // Create a table
