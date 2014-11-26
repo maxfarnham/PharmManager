@@ -9,10 +9,14 @@ import java.awt.*;
 import java.awt.event.*;
 */
 import javax.swing.*;
+
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
+
+import businessLayer.PharmacyManager;
 
 public class GUI extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
@@ -25,6 +29,8 @@ public class GUI extends JFrame implements ActionListener{
 	private JRadioButton smallRB, mediumRB, largeRB;
 	private ButtonGroup sizeGroup;
 	
+	//Will store the instance of PharmacyManager
+	private PharmacyManager PM;
 	
 
 	// Public access to print to display
@@ -37,6 +43,18 @@ public class GUI extends JFrame implements ActionListener{
 	}
 	
 	public void GUILaunch(){
+		// Creates a new instance of PharmacyManager Class
+			//when the GUI is launched
+		try {
+			PM = new PharmacyManager();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		int col1 = 20;
 		int row1 = 20;  // index for col1
 		int col2 = 330;
@@ -74,7 +92,7 @@ public class GUI extends JFrame implements ActionListener{
 		row1 += 400 + 20;
 		
 		///////////////////
-  
+		
 		reportB = new JButton("Report");
 		reportB.setSize(95, 30);
 		reportB.setLocation(col1, row1);
@@ -222,7 +240,7 @@ public class GUI extends JFrame implements ActionListener{
 		
 		setVisible(true);
 	  }
-	
+	  
 	  public void actionPerformed(ActionEvent m)
 	  {
 		  // Grab data from interface
@@ -271,11 +289,16 @@ public class GUI extends JFrame implements ActionListener{
 	    		  medicineL.setForeground(Color.red);
 			  }
 			  else{
-				  // execute sale method
-				  // sale(medicine, quantity, size);
-				  
-				  printScreen("saleB " + medicine + " " + sizeStr + " " + quantityStr);
-			      //displayTA.setText(medicine);    
+				  if(PM.getMedicine(medicine) != null){
+					  // execute sale method
+					  PM.purchased(medicine, quantity, size);
+					  
+					  printScreen("saleB " + medicine + " " + sizeStr + " " + quantityStr);
+					  //displayTA.setText(medicine);   
+				  }
+				  {
+					  printScreen(medicine + "is not in the DataBase!");
+				  }
 			  }
 	    	  //String result = commandHandler.executeNonScalar("SELECT * FROM MEDICINE").toString();    
 	      }
