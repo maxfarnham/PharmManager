@@ -8,12 +8,13 @@ public class Shipment {
 	private int expDate;
 	private int sold;
 
-	public Shipment(int shpmtID, int expired, int inStock, int sizeType, int expDate){
+	public Shipment(int shpmtID, int expired, int inStock, int sizeType, int expDate, int sold){
 		this.shpmtID = shpmtID;
 		this.expired = expired;
 		this.inStock = inStock;
 		this.sizeType = sizeType;
 		this.expDate = expDate;
+		this.sold = sold;
 	}
 	
 	public int getShipmentID(){

@@ -1,33 +1,33 @@
 package businessLayer;
 import java.util.ArrayList;
 
-public class ShipmentIterator implements Iterator{
-	private ArrayList<Shipment> shpmts;
+public class MedicineIterator implements Iterator {
+	private ArrayList<Medicine> meds;
 	private int position = -1;
-	
-	public ShipmentIterator(ArrayList<Shipment> shpmts){
-		this.shpmts = shpmts;
+
+	public MedicineIterator(ArrayList<Medicine> meds) {
+		this.meds = meds;
 	}
 
 	@Override
 	public boolean next() {
-		if(position + 1 < shpmts.size()) {
+		if(position + 1 < meds.size()) {
 			position++;
 			return true;
 		}
 		
 		return false;
 	}
-	
+
 	@Override
 	public Object first() {
 		position = 0;
 		return curr();
 	}
-	
+
 	@Override
 	public Object curr() {
-		return shpmts.get(position);
+		return meds.get(position);
 	}
-	
+
 }

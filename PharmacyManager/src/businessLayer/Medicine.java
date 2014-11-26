@@ -6,14 +6,16 @@ public class Medicine {
 	private int medicineId;
 	private int overFlag;
 	private int lowFlag;
-	private int sold = 0;
+	private int sold;
+	private int stock;
 	private ArrayList<Shipment> shpmts;
 	
-	public Medicine(String name, int overFlag, int lowFlag, int sold, ArrayList<Shipment> shpmts){
+	public Medicine(String name, int overFlag, int lowFlag, int sold, int stock, ArrayList<Shipment> shpmts){
 		this.name = name;
 		this.overFlag = overFlag;
 		this.lowFlag = lowFlag;
 		this.sold = sold;
+		this.stock = stock;
 		
 		//TODO - load shipments from DB
 		this.shpmts = shpmts;
@@ -34,6 +36,10 @@ public class Medicine {
 	
 	public int getSold(){
 		return sold;
+	}
+	
+	public int getStock(){
+		return stock;
 	}
 	
 	public int getMedicineId() {
