@@ -293,17 +293,17 @@ public class GUI extends JFrame implements ActionListener{
 					  // execute sale method
 					  PM.purchased(medicine, quantity, size);
 					  
-					  printScreen("saleB " + medicine + " " + sizeStr + " " + quantityStr);
+					  printScreen("saleB " + medicine + " " + sizeStr + " " + quantityStr + "\n");
 					  //displayTA.setText(medicine);   
 				  }
 				  {
-					  printScreen(medicine + "is not in the DataBase!");
+					  printScreen(medicine + "is not in the DataBase!\n");
 				  }
 			  }
 	    	  //String result = commandHandler.executeNonScalar("SELECT * FROM MEDICINE").toString();    
 	      }
 	      if (m.getSource() == restockB){
-	    	  //Restock needs Medicine Name, Qty, Size, expire
+	    	  //Re-stock needs Medicine Name, Qty, Size, expire
 	    	  if(medicine.equals("") || quantity == 0 || size == 0 || expire == 0){
 	    		  smallRB.setForeground(Color.red);
 	    		  mediumRB.setForeground(Color.red);
@@ -314,11 +314,15 @@ public class GUI extends JFrame implements ActionListener{
 	    	  }
 	    	  else{
 	    		  //TODO:
-	    		  // execute method to restock
-	    		  // restock(medicine, quantity, size, expire);
-	    		  
-	    		  printScreen("restockB" + " " + medicine + " " + quantityStr + " " + sizeStr + " " + expStr);
-	    		  //displayTA.setText("restockB" + medicine + " " + quantityStr + " " + size + " " + expStr); // sample	  
+	    		  // execute method to re-stock
+	    		  // Returns if the medicine is valid or not
+	    		  if(!PM.addShipment(medicine, expire, quantity, size)){
+	    			  printScreen(medicine + " was not found in the directory! Please add first!\n");
+	    		  }
+	    		  else{
+	    			  printScreen("restockB" + " " + medicine + " " + quantityStr + " " + sizeStr + " " + expStr);
+	    			  //displayTA.setText("restockB" + medicine + " " + quantityStr + " " + size + " " + expStr); // sample
+	    		  }
 	    	  }
 	      }
 	      if(m.getSource() == newMedB){
@@ -340,9 +344,17 @@ public class GUI extends JFrame implements ActionListener{
 	      if(m.getSource() == dayB){
 	    	  // TODO:
 	    	  // execute method to cycle day
-	    	  // day();
+	    	  try {
+				PM.aDayHasPassed();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	    	  
-	    	  printScreen("dayB");
+	    	  printScreen("Day has passed\n");
 	    	  //displayTA.setText("dayB");
 	      }
 	      if(m.getSource() == reportB){
