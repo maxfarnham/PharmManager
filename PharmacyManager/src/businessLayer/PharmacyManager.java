@@ -9,7 +9,7 @@ import java.sql.*;
 public class PharmacyManager {
 
 	//dataLayer
-	DataLayer DB;
+	private DataLayer DB;
 
 	private Clock clock = new Clock(); //The concrete observable thing
 
@@ -23,12 +23,14 @@ public class PharmacyManager {
 			ArrayList<Map<String, Object>> rs;
 			ArrayList<Shipment> shpmts = new ArrayList<Shipment>();
 
-			rs = DB.executeQuery("SELECT TOP 1 MedicineID, LowStockThreshold, OverstockThreshold " +
+			rs = DB.executeQuery("SELECT MedicineID, LowStockThreshold, OverstockThreshold " +
 					             "FROM Medications " +
 					             "WHERE Name = '" + name + "'");
 
-			if(rs == null || rs.size() < 1) 
+			if(rs == null || rs.size() < 1){ 
+				System.out.println("BAD SQL");
 				return null;
+			}
 
 			Map<String, Object> medicine = rs.get(0);
 			    int overFlag   = (int) medicine.get("OverstockThreshold"), 
@@ -55,13 +57,13 @@ public class PharmacyManager {
 			return new Medicine(name, overFlag, lowFlag, sold, stock, shpmts);
 		}
 		catch (Exception e) {
-			//TODO - logging?
+			System.out.println("Caught Exception.");
 			return null;
 		}
 	}
 
 	//TODO error check parameters
-	public boolean addMedication(String name, int overFlag, int lowFlag){
+	public boolean addMedication(String name, int lowFlag, int overFlag){
 		try {
 			String sql;
 			String safeName = name.replace("'", "''");
