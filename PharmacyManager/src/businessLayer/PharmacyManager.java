@@ -89,7 +89,7 @@ public class PharmacyManager {
 	}
 
 	//TODO error check parameters
-	public boolean addShipment(String medication, int expDate, int amount, int sizeOfCans) throws ClassNotFoundException, SQLException{
+	public boolean addShipment(String medication, int expDate, int amount, int sizeOfCans){
 		try {
 			String sql;
 
@@ -132,12 +132,6 @@ public class PharmacyManager {
 	public int purchased(String medication, int amount, int size){
 		try {
 			Medicine med = getMedicine(medication);
-			
-			//there isn't enough return with -1
-			//Or send message to GUI on what to do
-			//Or recall functions with smaller amount
-			if(med.getStock() < amount)
-				return -1;
 
 			//BUG - do we want this to decrement all our stock even though the sale can't be completed? 
 			//Should warn before hand, or roll back the purchase if there's not enough
@@ -171,12 +165,13 @@ public class PharmacyManager {
 				}
 			}
 
-			return amount;
+			return amount; //return left over
 		} catch (Exception e) {
-			return -2;
+			return -1;
 		}
 	}
 
+	//get Top selling medications
 	public MedicineIterator getTopMedications(int N){
 		try {
 			ArrayList<Map<String, Object>> medications, shipments;
@@ -184,15 +179,15 @@ public class PharmacyManager {
 			ArrayList<Medicine> meds = new ArrayList<Medicine>();
 
 			medications = DB.executeQuery(
-					//TOP may not work on every database!
 						  String.format(
-								  "SELECT TOP %d Medications.MedicineID, Name, " +
+								  "SELECT Medications.MedicineID, Name, " +
 								  "LowStockThreshold, OverstockThreshold, " +
-								  "SUM(InStock) As Stock, SUM(Sold) As Sold " +
+								  "SUM(InStock) AS Stock, SUM(Sold) AS Sold " +
 					              "FROM Medications INNER JOIN Shipments " +
 								  "ON Medications.MedicineID = Shipments.MedicineID " +
 					              "GROUP BY Medications.MedicineID " +
-								  "ORDER BY Sold DESC;", N));
+								  "ORDER BY Sold DESC " +
+					              "LIMIT %d;", N));
 
 			if(medications == null || medications.size() < 1) 
 				return null;
@@ -229,7 +224,7 @@ public class PharmacyManager {
 			return new MedicineIterator(meds);
 		}
 		catch (Exception e) {
-			//TODO - logging?
+			System.out.println("Error in getTopMedications");
 			return null;
 		}
 	}
