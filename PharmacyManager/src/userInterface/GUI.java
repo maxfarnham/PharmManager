@@ -9,10 +9,14 @@ import java.awt.*;
 import java.awt.event.*;
 */
 import javax.swing.*;
+
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
+
+import businessLayer.PharmacyManager;
 
 public class GUI extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
@@ -25,12 +29,32 @@ public class GUI extends JFrame implements ActionListener{
 	private JRadioButton smallRB, mediumRB, largeRB;
 	private ButtonGroup sizeGroup;
 	
+	//Will store the instance of PharmacyManager
+	private PharmacyManager PM;
+	
+
 	// Public access to print to display
-	public void printToScreen(String str){
-		displayTA.setText(str);
+	public void printScreen(String str){
+		displayTA.append(str);
+	}
+	// Public access to clear display
+	public void clearScreen(){
+		displayTA.setText("");
 	}
 	
 	public void GUILaunch(){
+		// Creates a new instance of PharmacyManager Class
+			//when the GUI is launched
+		try {
+			PM = new PharmacyManager();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		int col1 = 20;
 		int row1 = 20;  // index for col1
 		int col2 = 330;
@@ -68,7 +92,7 @@ public class GUI extends JFrame implements ActionListener{
 		row1 += 400 + 20;
 		
 		///////////////////
-  
+		
 		reportB = new JButton("Report");
 		reportB.setSize(95, 30);
 		reportB.setLocation(col1, row1);
@@ -216,7 +240,7 @@ public class GUI extends JFrame implements ActionListener{
 		
 		setVisible(true);
 	  }
-	
+	  
 	  public void actionPerformed(ActionEvent m)
 	  {
 		  // Grab data from interface
@@ -265,11 +289,16 @@ public class GUI extends JFrame implements ActionListener{
 	    		  medicineL.setForeground(Color.red);
 			  }
 			  else{
-				  // execute sale method
-				  // sale(medicine, quantity, size);
-				  
-				  printToScreen("saleB " + medicine + " " + sizeStr + " " + quantityStr);
-			      //displayTA.setText(medicine);    
+				  if(PM.getMedicine(medicine) != null){
+					  // execute sale method
+					  PM.purchased(medicine, quantity, size);
+					  
+					  printScreen("saleB " + medicine + " " + sizeStr + " " + quantityStr);
+					  //displayTA.setText(medicine);   
+				  }
+				  {
+					  printScreen(medicine + "is not in the DataBase!");
+				  }
 			  }
 	    	  //String result = commandHandler.executeNonScalar("SELECT * FROM MEDICINE").toString();    
 	      }
@@ -288,7 +317,7 @@ public class GUI extends JFrame implements ActionListener{
 	    		  // execute method to restock
 	    		  // restock(medicine, quantity, size, expire);
 	    		  
-	    		  printToScreen("restockB" + " " + medicine + " " + quantityStr + " " + sizeStr + " " + expStr);
+	    		  printScreen("restockB" + " " + medicine + " " + quantityStr + " " + sizeStr + " " + expStr);
 	    		  //displayTA.setText("restockB" + medicine + " " + quantityStr + " " + size + " " + expStr); // sample	  
 	    	  }
 	      }
@@ -304,7 +333,7 @@ public class GUI extends JFrame implements ActionListener{
 	    		  // execute method to insert new med
 	    		  // newMed(newMedicine, low, high);
 	    		  
-	    		  printToScreen("newMedB " + newMedicine + " " + lowStr + " " + overStr);
+	    		  printScreen("newMedB " + newMedicine + " " + lowStr + " " + overStr);
 	    		  //displayTA.setText("newMedB" + newMedicine + " " + lowStr + " " + overStr);
 	    	  }
 	      }
@@ -313,7 +342,7 @@ public class GUI extends JFrame implements ActionListener{
 	    	  // execute method to cycle day
 	    	  // day();
 	    	  
-	    	  printToScreen("dayB");
+	    	  printScreen("dayB");
 	    	  //displayTA.setText("dayB");
 	      }
 	      if(m.getSource() == reportB){
@@ -321,7 +350,7 @@ public class GUI extends JFrame implements ActionListener{
 	    	  // report();
 	    	  
 	    	  //String result = d.executeNonScalar("SELECT * FROM MEDICINE").toString();
-		      printToScreen("reportB");
+		      printScreen("reportB");
 		      
 		      //displayTA.setText("reportB");  
 	      }
@@ -334,7 +363,7 @@ public class GUI extends JFrame implements ActionListener{
 	    	  expSpin.setValue(0);
 	    	  lowSpin.setValue(0);
 	    	  overSpin.setValue(0);
-	    	  printToScreen("");
+	    	  printScreen("");
 	    	  //displayTA.setText("");
 	      }
 	  }
