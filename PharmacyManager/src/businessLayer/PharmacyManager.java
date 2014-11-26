@@ -31,18 +31,18 @@ public class PharmacyManager {
 				return null;
 
 			Map<String, Object> medicine = rs.get(0);
-			int overFlag   = (int) medicine.get("OverstockThreshold"), 
+			    int overFlag   = (int) medicine.get("OverstockThreshold"), 
 					lowFlag    = (int) medicine.get("LowStockThreshold"),
 					medicineID = (int) medicine.get("MedicineID"),
-					stock      = (int) DB.executeScalar("SELECT COALESCE(SUM(InStock), 0) FROM Shipment WHERE MedicineID = " + medicineID), 
-					sold       = (int) DB.executeScalar("SELECT COALESCE(SUM(Sold), 0) FROM Shipment WHERE MedicineID = " + medicineID); 
+					stock      = (int) DB.executeScalar("SELECT COALESCE(SUM(InStock), 0) FROM Shipments WHERE MedicineID = " + medicineID), 
+					sold       = (int) DB.executeScalar("SELECT COALESCE(SUM(Sold), 0) FROM Shipments WHERE MedicineID = " + medicineID); 
 
 			rs = DB.executeQuery("SELECT ShipmentID, Expired, InStock, Size, ExpDate " +
 					"FROM Shipments" +
 					"WHERE MedicineID = " + medicineID + ";");
 
 			for(Map<String, Object> shipment : rs){
-				int shpmtID  = (int)shipment.get("ShipmentID"),
+				    int shpmtID  = (int)shipment.get("ShipmentID"),
 						expired  = (int)shipment.get("Expired"),
 						inStock  = (int)shipment.get("InStock"),
 						sizeType = (int)shipment.get("Size"),

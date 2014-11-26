@@ -3,6 +3,7 @@ package businessLayer;
 public class PharMTest {
 
 	public static void main(String[] args) {
+		/*
 		PharmacyManager pm = new PharmacyManager();
 		
 		//TODO Add medications from text file?
@@ -26,6 +27,7 @@ public class PharMTest {
 		pm.aDayHasPassed();
 		
 		pm.displayMyStock();
+		*/
 	}
 
 }
