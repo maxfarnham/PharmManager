@@ -1,4 +1,4 @@
-package businessLayer;
+package common;
 
 public interface Iterator {
 	boolean next();

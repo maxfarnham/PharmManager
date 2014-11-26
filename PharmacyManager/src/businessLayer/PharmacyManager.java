@@ -6,58 +6,36 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.sql.*;
 
+import common.Iterator;
+import common.Observer;
+
 public class PharmacyManager {
 
 	//dataLayer
-	DataLayer DB;
+	private DataLayer DB;
 
-	private Clock clock = new Clock(); //The concrete observable thing
+	private LowStockObservable low = new LowStockObservable();
+	private ExpCloseObservable exp = new ExpCloseObservable();
 
 	public PharmacyManager() throws ClassNotFoundException, SQLException {
 		DB = new DataLayer("pharmacy");
+
+		//Create tables, if needed
+		Medicine.CreateTable(DB);
+		Shipment.CreateTable(DB);
+	}
+	
+	public void RegisterLowStockObserver(Observer o) {
+		low.addObserver(o);
+	}
+	
+	public void RegisterExpCloseObserver(Observer o) {
+		exp.addObserver(o);
 	}
 
 	//Returns Medicine ojbect or null if fail.
 	public Medicine getMedicine(String name) {
-		try {
-			ArrayList<Map<String, Object>> rs;
-			ArrayList<Shipment> shpmts = new ArrayList<Shipment>();
-
-			rs = DB.executeQuery("SELECT TOP 1 MedicineID, LowStockThreshold, OverstockThreshold " +
-					             "FROM Medications " +
-					             "WHERE Name = '" + name + "'");
-
-			if(rs == null || rs.size() < 1) 
-				return null;
-
-			Map<String, Object> medicine = rs.get(0);
-			    int overFlag   = (int) medicine.get("OverstockThreshold"), 
-					lowFlag    = (int) medicine.get("LowStockThreshold"),
-					medicineID = (int) medicine.get("MedicineID"),
-					stock      = (int) DB.executeScalar("SELECT COALESCE(SUM(InStock), 0) FROM Shipments WHERE MedicineID = " + medicineID), 
-					sold       = (int) DB.executeScalar("SELECT COALESCE(SUM(Sold), 0) FROM Shipments WHERE MedicineID = " + medicineID); 
-
-			rs = DB.executeQuery("SELECT ShipmentID, Expired, InStock, Sold, Size, ExpDate " +
-					             "FROM Shipments" +
-					             "WHERE MedicineID = " + medicineID + ";");
-
-			for(Map<String, Object> shipment : rs){
-				int shpmtID  = (int)shipment.get("ShipmentID"),
-					expired  = (int)shipment.get("Expired"),
-					inStock  = (int)shipment.get("InStock"),
-					subSold  = (int)shipment.get("Sold"),
-					sizeType = (int)shipment.get("Size"),
-					expDate  = (int)shipment.get("ExpDate");
-
-				shpmts.add(new Shipment(shpmtID, expired, inStock, sizeType, expDate, subSold));
-			}
-
-			return new Medicine(name, overFlag, lowFlag, sold, stock, shpmts);
-		}
-		catch (Exception e) {
-			//TODO - logging?
-			return null;
-		}
+		return Medicine.get(DB, name);
 	}
 
 	//TODO error check parameters
@@ -66,9 +44,9 @@ public class PharmacyManager {
 			String sql;
 			String safeName = name.replace("'", "''");
 
-			sql = String.format("INSERT INTO Medications" +
-					            "(Name, LowStockThreshold, OverstockThreshold)" +
-					            "VALUES('%s', %d, %d);", safeName, lowFlag, overFlag);
+			sql = String.format("INSERT INTO Medicine" +
+					"(Name, LowStockThreshold, OverstockThreshold)" +
+					"VALUES('%s', %d, %d);", safeName, lowFlag, overFlag);
 
 			int rowsModified = DB.executeNonQuery(sql);
 
@@ -89,18 +67,18 @@ public class PharmacyManager {
 			String sql;
 
 			sql = String.format("SELECT TOP 1 COALESCE(MedicineID, 0) " +
-					            "FROM Medications" +
-					            "WHERE Name = '%s';", medication);
+					"FROM Medicine" +
+					"WHERE Name = '%s';", medication);
 
 			int medicineID = (int)DB.executeScalar(sql);
-			
+
 			//medicine not found
 			if(medicineID == 0) 
 				return false;
 
 			sql = String.format("INSERT INTO Shipments" +
-					            "(Expired, InStock, Sold, ExpDate, Size, MedicineID)" +
-					            "VALUES(%d, %d, %d, %d, %d)", 0, amount, 0, expDate, sizeOfCans, medicineID);
+					"(Expired, InStock, Sold, ExpDate, Size, MedicineID)" +
+					"VALUES(%d, %d, %d, %d, %d)", 0, amount, 0, expDate, sizeOfCans, medicineID);
 
 			int rowsModified = DB.executeNonQuery(sql);
 
@@ -125,15 +103,13 @@ public class PharmacyManager {
 	public int purchased(String medication, int amount, int size){
 		try {
 			Medicine med = getMedicine(medication);
-			
+
 			//there isn't enough return with -1
 			//Or send message to GUI on what to do
 			//Or recall functions with smaller amount
 			if(med.getStock() < amount)
 				return -1;
 
-			//BUG - do we want this to decrement all our stock even though the sale can't be completed? 
-			//Should warn before hand, or roll back the purchse if there's not enough
 			Iterator iter = med.getShipmentIterator();
 			while(iter.next() && amount > 0) {
 				Shipment shp = (Shipment) iter.curr();
@@ -141,29 +117,31 @@ public class PharmacyManager {
 				//make sure it's the right size, not expired
 				if(shp.getSizeType() == size && shp.getExpired() == 0) {
 					int dif = shp.getInStock() - amount;
-					
+
 					if(dif >= 0){ //enough in this shipment
 						DB.executeNonQuery(
-						String.format("UPDATE Shipments" +
-							          "SET Sold = %d, InStock = %d" +
-							          "WHERE ShipmentID = %d;", 
-							          shp.getSold() + amount, dif, shp.getShipmentID() ));
-						
+								String.format("UPDATE Shipments" +
+										"SET Sold = %d, InStock = %d" +
+										"WHERE ShipmentID = %d;", 
+										shp.getSold() + amount, dif, shp.getShipmentID() ));
+
 						amount = 0; //done
 					}
 					else {//Not enough in this shipment, carry over to next shipment
 						DB.executeNonQuery(
-						String.format("UPDATE Shipments" +
-									  "SET Sold = %d, InStock = %d" +
-									  "WHERE ShipmentID = %d;", 
-									  shp.getSold() + shp.getInStock(), 0, shp.getShipmentID() ));
-						
+								String.format("UPDATE Shipments" +
+										"SET Sold = %d, InStock = %d" +
+										"WHERE ShipmentID = %d;", 
+										shp.getSold() + shp.getInStock(), 0, shp.getShipmentID() ));
+
 						amount = Math.abs(dif); //What is left to take out in another shipment
 					}
-					
+
 				}
 			}
-
+			
+			//raise stock changed event
+			low.RecordChanged(DB, med);
 			return amount;
 		} catch (Exception e) {
 			return -2;
@@ -173,50 +151,25 @@ public class PharmacyManager {
 	public MedicineIterator getTopMedications(int N){
 		try {
 			ArrayList<Map<String, Object>> medications, shipments;
-			
+
 			ArrayList<Medicine> meds = new ArrayList<Medicine>();
 
 			medications = DB.executeQuery(
 					//TOP may not work on every database!
-						  String.format(
-								  "SELECT TOP %d Medications.MedicineID, Name," +
-								  "LowStockThreshold, OverstockThreshold," +
-								  "SUM(InStock) As Stock, SUM(Sold) As Sold " +
-					              "FROM Medications INNER JOIN Shipments" +
-								  "ON Medications.MedicineID = Shipments.MedicineID" +
-					              "GROUP BY Medications.MedicineID" +
-								  "ORDER BY Sold DESC;", N));
+					String.format(
+							"SELECT TOP %d Medicine.MedicineID, Name," +
+									"LowStockThreshold, OverstockThreshold," +
+									"SUM(InStock) As Stock, SUM(Sold) As Sold " +
+									"FROM Medications INNER JOIN Shipments" +
+									"ON Medications.MedicineID = Shipments.MedicineID" +
+									"GROUP BY Medications.MedicineID" +
+									"ORDER BY Sold DESC;", N));
 
 			if(medications == null || medications.size() < 1) 
 				return null;
-			
-			for(Map<String, Object> medicine : medications){
-				ArrayList<Shipment> shpmts = new ArrayList<Shipment>();
-				
-				String name    = (String) medicine.get("Name");
-			    int overFlag   = (int) medicine.get("OverstockThreshold"), 
-					lowFlag    = (int) medicine.get("LowStockThreshold"),
-					medicineID = (int) medicine.get("MedicineID"),
-					stock      = (int) medicine.get("Stock"), 
-					sold       = (int) medicine.get("Sold"); 
-			    
-			    shipments = DB.executeQuery("SELECT ShipmentID, Expired, InStock, Sold, Size, ExpDate " +
-			                                "FROM Shipments" +
-			                                "WHERE MedicineID = " + medicineID + ";");
 
-			    for(Map<String, Object> shipment : shipments){
-					int shpmtID  = (int)shipment.get("ShipmentID"),
-						expired  = (int)shipment.get("Expired"),
-						inStock  = (int)shipment.get("InStock"),
-						subSold  = (int)shipment.get("Sold"),
-						sizeType = (int)shipment.get("Size"),
-						expDate  = (int)shipment.get("ExpDate");
-			
-						shpmts.add(new Shipment(shpmtID, expired, inStock, sizeType, expDate, subSold));
-			    }
-			    
-			    meds.add(new Medicine(name, overFlag, lowFlag, sold, stock, shpmts));
-
+			for(Map<String, Object> medicineData : medications){
+				meds.add(new Medicine(DB, medicineData));
 			}
 
 			return new MedicineIterator(meds);
@@ -226,9 +179,16 @@ public class PharmacyManager {
 			return null;
 		}
 	}
+
+	public void aDayHasPassed() throws ClassNotFoundException, SQLException{
+		DB.executeNonQuery("UPDATE Shipments SET ExpDate = ExpDate-1");
 		
-	public void aDayHasPassed(){
-		clock.aDayHasPassed();
+		ArrayList<Map<String, Object>> meds = DB.executeQuery("SELECT MedicineID FROM Medicine");
+		
+		//raise exp date changed event
+		for(Map<String, Object> med : meds) {
+			exp.RecordChanged(DB, med);
+		}
 	}
 
 }

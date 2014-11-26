@@ -1,6 +1,8 @@
 package businessLayer;
 import java.util.ArrayList;
 
+import common.Iterator;
+
 public class MedicineIterator implements Iterator {
 	private ArrayList<Medicine> meds;
 	private int position = -1;
