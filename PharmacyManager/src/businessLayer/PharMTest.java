@@ -18,45 +18,44 @@ public class PharMTest {
 		
 		
 		//TODO Add medications from text file?
-		
 		pm.addMedication("Aspirin", 40, 1000); //Upper limit(notify when overstocked), lower limit (notify when low on stock)
 		pm.addMedication("Tylenol", 20, 500);
+		pm.addMedication("MedX", 35, 1000000);
 		
+		 // (name, expDate, amount, size)
 		pm.addShipment("Aspirin", 15, 30, 1);
-		pm.addShipment("Aspirin", 20, 35, 1);
-		pm.addShipment("Tylenol", 8, 30, 1); // (name, expDate, amount, size)
+		pm.addShipment("Aspirin", 20, 70, 3);
+		pm.addShipment("Tylenol", 30, 50, 1);
+		pm.addShipment("Tylenol", 30, 50, 2);
+		pm.addShipment("MedX", 90, 150, 2);
+		pm.addShipment("MedX", 120, 500, 2);
 		
 		Medicine med = pm.getMedicine("Aspirin");
-		
-		System.out.println("MedicineID: " + med.getMedicineId());
-		System.out.println();
+		System.out.println("MedicineID: " + med.getMedicineID());
 		System.out.println("Medicine: " + med.getName());
-		System.out.println();
 		System.out.println("Stock: " + med.getStock());
-		System.out.println();
 		System.out.println("Sold: " + med.getSold());
-		System.out.println();
 		System.out.println("LowStockThreshold: " + med.getLowStockThreshold());
-		System.out.println();
 		System.out.println("OverstockThreshold: " + med.getOverstockThreshold());
 		
+		System.out.println();
+		
+		printShipments(med.getShipmentIterator());
 		
 		
-		//pm.displayMyStock();
-		
-		//System.out.println("leftover: " + pm.purchased("Aspirin", 15, 1));
-		//System.out.println("leftover: " + pm.purchased("Aspirin", 15, 1));
-		//System.out.println("leftover: " + pm.purchased("Aspirin", 15, 1));
-		//System.out.println("leftover: " + pm.purchased("Aspirin", 15, 1));
-		//System.out.println("leftover: " + pm.purchased("Aspirin", 15, 1));
-		
-		/*
-		pm.displayMyStock();
-
-		pm.aDayHasPassed();
-		
-		pm.displayMyStock();
-		*/
+	}
+	
+	public static void printShipments(Iterator shps){
+		while(shps.next()){
+			Shipment shp = (Shipment) shps.curr();
+			System.out.println("ShipmentID: " + shp.getShipmentID());
+			System.out.println("ExpDate: " + shp.getExpDate());
+			System.out.println("Expired?: " + shp.getExpired());
+			System.out.println("InStock: " + shp.getInStock());
+			System.out.println("Size: " + shp.getSizeType());
+			System.out.println("Sold: " + shp.getSold());
+			System.out.println();
+		}
 	}
 
 }

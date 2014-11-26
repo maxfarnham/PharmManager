@@ -3,15 +3,16 @@ import java.util.ArrayList;
 
 public class Medicine {
 	private String name;
-	private int medicineId;
+	private int medicineID;
 	private int overFlag;
 	private int lowFlag;
 	private int sold;
 	private int stock;
 	private ArrayList<Shipment> shpmts;
 	
-	public Medicine(String name, int overFlag, int lowFlag, int sold, int stock, ArrayList<Shipment> shpmts){
+	public Medicine(String name, int medicineID, int overFlag, int lowFlag, int sold, int stock, ArrayList<Shipment> shpmts){
 		this.name = name;
+		this.medicineID = medicineID;
 		this.overFlag = overFlag;
 		this.lowFlag = lowFlag;
 		this.sold = sold;
@@ -24,7 +25,6 @@ public class Medicine {
 	public String getName(){
 		return name;
 	}
-
 	
 	public int getOverstockThreshold(){
 		return overFlag;
@@ -42,8 +42,8 @@ public class Medicine {
 		return stock;
 	}
 	
-	public int getMedicineId() {
-		return medicineId;
+	public int getMedicineID() {
+		return medicineID;
 	}
 	
 	public Iterator getShipmentIterator(){
