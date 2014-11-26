@@ -25,9 +25,15 @@ public class GUI extends JFrame implements ActionListener{
 	private JRadioButton smallRB, mediumRB, largeRB;
 	private ButtonGroup sizeGroup;
 	
+	
+
 	// Public access to print to display
-	public void printToScreen(String str){
-		displayTA.setText(str);
+	public void printScreen(String str){
+		displayTA.append(str);
+	}
+	// Public access to clear display
+	public void clearScreen(){
+		displayTA.setText("");
 	}
 	
 	public void GUILaunch(){
