@@ -66,7 +66,7 @@ public class PharmacyManager {
 			//added ExpSoonThreshold
 			sql = String.format("INSERT INTO Medicine " +
 					            "(MedicineID, Name, LowStockThreshold, OverStockThreshold, ExpSoonThreshold) " +
-					            "VALUES(%d, '%s', %d, %d, %d);", medIDs++, safeName, lowFlag, overFlag, 0);
+					            "VALUES(%d, '%s', %d, %d, %d);", medIDs++, safeName, lowFlag, overFlag, 7);
 			
 			
 			int rowsModified = DB.executeNonQuery(sql);
