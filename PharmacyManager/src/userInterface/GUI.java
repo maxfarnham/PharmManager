@@ -16,6 +16,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
+import businessLayer.Medicine;
+import businessLayer.MedicineIterator;
 import businessLayer.PharmacyManager;
 
 public class GUI extends JFrame implements ActionListener{
@@ -381,9 +383,29 @@ public class GUI extends JFrame implements ActionListener{
 	      if(m.getSource() == reportB){
 	    	  // execute method to run reports
 	    	  // report();
-	    	  
+	    	  clearScreen();
+	    	  Medicine currentMed;
+	    	  MedicineIterator medIter = PM.getAllMedications();
+	    	  String name;
+	    	  String stockStr;
+	    	  int stock = 0;
+	    	  while(medIter.next()){
+	    		  currentMed = (Medicine) medIter.curr();
+	    		  name = currentMed.getName();
+	    		  printScreen(name + " ");
+	    		  try {
+					stock = currentMed.getStock();
+	    		  } catch (ClassNotFoundException e) {
+	    		  } catch (SQLException e) {
+	    		  }
+	    		  stockStr = String.format("%d\n", stock);
+	    		  printScreen(stockStr);
+	    		  stock = 0;
+	    		  
+	    	  }
 	    	  //String result = d.executeNonScalar("SELECT * FROM MEDICINE").toString();
-		      printScreen("reportB");
+	    	  
+		      //printScreen("reportB");
 		      
 		      //displayTA.setText("reportB");  
 	      }
