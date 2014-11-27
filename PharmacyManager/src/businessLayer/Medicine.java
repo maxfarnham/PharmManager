@@ -13,21 +13,21 @@ public class Medicine {
 	private int overThreshold;
 	private int lowThreshold;
 	private int expSoonThreshold;
-	private int sold;
-	private ArrayList<Shipment> shpmts;
+	private ArrayList<Shipment> shpmts = new ArrayList<Shipment>();
 
 	public Medicine(DataLayer DB, Map<String, Object> RowData) throws ClassNotFoundException, SQLException{
 		this.name 		      = (String) RowData.get("Name");
-		this.overThreshold    = (int) RowData.get("OverstockThreshold");
+		this.overThreshold    = (int) RowData.get("OverStockThreshold");
 		this.lowThreshold     = (int) RowData.get("LowStockThreshold");
-		this.expSoonThreshold = (int) RowData.get("expSoonThreshold");
+		this.expSoonThreshold = (int) RowData.get("ExpSoonThreshold");
 		this.medicineId       = (int) RowData.get("MedicineID");
 		
 		this.DB = DB;
 
-		ArrayList<Map<String, Object>> rs = DB.executeQuery("SELECT ShipmentID, Expired, InStock, Sold, Size, ExpDate " +
-																"FROM Shipments" +
-																"WHERE MedicineID = " + medicineId);
+		ArrayList<Map<String, Object>> rs = DB.executeQuery("SELECT * " +
+															"FROM Shipments " +
+															"WHERE MedicineID = " + medicineId);
+		
 		for(Map<String, Object> shipmentData : rs){
 			shpmts.add(new Shipment(DB, shipmentData));
 		}
@@ -37,7 +37,7 @@ public class Medicine {
 		return name;
 	}
 
-	public int getOverstockThreshold(){
+	public int getOverStockThreshold(){
 		return overThreshold;
 	}
 
@@ -49,13 +49,14 @@ public class Medicine {
 		return expSoonThreshold;
 	}
 
-	public int getSold(){
-		return sold;
+	public int getSold() throws ClassNotFoundException, SQLException{
+		return (int)DB.executeScalar("SELECT SUM(Sold) " +
+				                     "FROM Shipments WHERE MedicineId = " + this.medicineId);
 	}
 
 	public int getStock() throws ClassNotFoundException, SQLException{
 		return (int)DB.executeScalar("SELECT SUM(InStock) " +
-										" FROM Shipments WHERE MedicineId = " + this.medicineId);
+									 "FROM Shipments WHERE MedicineId = " + this.medicineId);
 	}
 
 	public int getMedicineId() {
@@ -71,7 +72,7 @@ public class Medicine {
 			ArrayList<Map<String, Object>> rs;
 
 			rs = DB.executeQuery("SELECT * " +
-					" FROM Medications " +
+					" FROM Medicine " +
 					" WHERE MedicineID = " + medicineId +
 					" LIMIT 1");
 
@@ -90,20 +91,21 @@ public class Medicine {
 	public static Medicine get(DataLayer DB, String medicineName) {
 		try {
 			ArrayList<Map<String, Object>> rs;
-
+			
 			rs = DB.executeQuery("SELECT * " +
-					" FROM Medications " +
-					" WHERE Name = '" + medicineName + "' " +
-					" LIMIT 1");
+				     " FROM Medicine " +
+				     " WHERE Name = '" + medicineName + "' " +
+				     " LIMIT 1");
 
 			if(rs == null || rs.size() < 1) 
 				return null;
-
+			
 			Map<String, Object> medicineData = rs.get(0);
+			
 			return new Medicine(DB, medicineData);
 		}
 		catch (Exception e) {
-			//TODO - logging?
+			System.out.println("Error in Medicine.get()");
 			return null;
 		}
 	}

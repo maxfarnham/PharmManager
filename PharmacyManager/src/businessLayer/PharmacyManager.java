@@ -47,14 +47,18 @@ public class PharmacyManager {
 			String sql;
 			String safeName = name.replace("'", "''");
 
+			//added ExpSoonThreshold
 			sql = String.format("INSERT INTO Medicine " +
-					            "(MedicineID, Name, LowStockThreshold, OverstockThreshold) " +
-					            "VALUES(%d, '%s', %d, %d);", medIDs++, safeName, lowFlag, overFlag);
+					            "(MedicineID, Name, LowStockThreshold, OverStockThreshold, ExpSoonThreshold) " +
+					            "VALUES(%d, '%s', %d, %d, %d);", medIDs++, safeName, lowFlag, overFlag, 0);
+			
 			
 			int rowsModified = DB.executeNonQuery(sql);
 
-			if(rowsModified < 1) 
+			if(rowsModified < 1) {
+				System.out.println("Error in addMedication");
 				return false;
+			}
 
 			return true;
 		}
@@ -70,14 +74,16 @@ public class PharmacyManager {
 			String sql;
 
 			sql = String.format("SELECT COALESCE(MedicineID, 0) " +
-					            "FROM Medications " +
+					            "FROM Medicine " +
 					            "WHERE Name = '%s';", medication);
 			
 			int medicineID = (int)DB.executeScalar(sql);
 			
 			//medicine not found
-			if(medicineID == 0) 
+			if(medicineID == 0) {
+				System.out.println("Error in addShipment");
 				return false;
+			}
 
 			sql = String.format("INSERT INTO Shipments " +
 					            "(ShipmentID, Expired, InStock, Sold, ExpDate, Size, MedicineID) " +
@@ -87,8 +93,10 @@ public class PharmacyManager {
 			int rowsModified = DB.executeNonQuery(sql);
 
 			//something went wrong
-			if(rowsModified < 1) 
+			if(rowsModified < 1){
+				System.out.println("Error in addShipment");
 				return false;
+			}
 
 			return true;
 		}
@@ -125,8 +133,8 @@ public class PharmacyManager {
 
 					if(dif >= 0){ //enough in this shipment
 						DB.executeNonQuery(
-								String.format("UPDATE Shipments" +
-										"SET Sold = %d, InStock = %d" +
+								String.format("UPDATE Shipments " +
+										"SET Sold = %d, InStock = %d " +
 										"WHERE ShipmentID = %d;", 
 										shp.getSold() + amount, dif, shp.getShipmentID() ));
 
@@ -134,8 +142,8 @@ public class PharmacyManager {
 					}
 					else {//Not enough in this shipment, carry over to next shipment
 						DB.executeNonQuery(
-								String.format("UPDATE Shipments" +
-										"SET Sold = %d, InStock = %d" +
+								String.format("UPDATE Shipments " +
+										"SET Sold = %d, InStock = %d " +
 										"WHERE ShipmentID = %d;", 
 										shp.getSold() + shp.getInStock(), 0, shp.getShipmentID() ));
 
@@ -149,26 +157,27 @@ public class PharmacyManager {
 			low.RecordChanged(DB, med);
 			return amount;
 		} catch (Exception e) {
+			System.out.println("Error in purchased()");
 			return -2;
 		}
 	}
 
 	public MedicineIterator getTopMedications(int N){
 		try {
-			ArrayList<Map<String, Object>> medications, shipments;
+			ArrayList<Map<String, Object>> medications;
 
 			ArrayList<Medicine> meds = new ArrayList<Medicine>();
 
 			medications = DB.executeQuery(
-					//TOP may not work on every database!
 					String.format(
-							"SELECT TOP %d Medicine.MedicineID, Name," +
-									"LowStockThreshold, OverstockThreshold," +
-									"SUM(InStock) As Stock, SUM(Sold) As Sold " +
-									"FROM Medications INNER JOIN Shipments" +
-									"ON Medications.MedicineID = Shipments.MedicineID" +
-									"GROUP BY Medications.MedicineID" +
-									"ORDER BY Sold DESC;", N));
+							"SELECT Medicine.MedicineID, Name, " +
+							"LowStockThreshold, OverStockThreshold, ExpSoonThreshold, " +
+							"SUM(Sold) As Sold " +
+							"FROM Medicine INNER JOIN Shipments " +
+							"ON Medicine.MedicineID = Shipments.MedicineID " +
+							"GROUP BY Medicine.MedicineID " +
+							"ORDER BY Sold DESC " +
+							"LIMIT %d;", N));
 
 			if(medications == null || medications.size() < 1) 
 				return null;

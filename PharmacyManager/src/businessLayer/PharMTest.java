@@ -32,6 +32,7 @@ public class PharMTest {
 		pm.addShipment("MedX", 90, 150, 2);
 		pm.addShipment("MedX", 120, 500, 2);
 		
+		
 		/*
 		Medicine med = pm.getMedicine("Aspirin");
 		printMedicineInfo(med);
@@ -39,15 +40,16 @@ public class PharMTest {
 		printShipments(med.getShipmentIterator());
 		*/
 		
-		if(pm.purchased("Aspirin", 10, 1) > 0) System.out.println("Not enough for this purchase");
-		if(pm.purchased("Tylenol", 30, 1) > 0) System.out.println("Not enough for this purchase");
-		if(pm.purchased("MedX", 20, 2) > 0) System.out.println("Not enough for this purchase");
+		System.out.println(pm.purchased("Aspirin", 10, 1));
+		System.out.println(pm.purchased("Tylenol", 30, 1));
+		System.out.println(pm.purchased("MedX", 20, 2));
 		/*
 		med = pm.getMedicine("Aspirin");
 		printMedicineInfo(med);
 		System.out.println();
 		printShipments(med.getShipmentIterator());
 		*/
+		
 		
 		Iterator meds = pm.getTopMedications(3);
 		
@@ -67,7 +69,8 @@ public class PharMTest {
 		System.out.println("Stock: " + med.getStock());
 		System.out.println("Sold: " + med.getSold());
 		System.out.println("LowStockThreshold: " + med.getLowStockThreshold());
-		System.out.println("OverstockThreshold: " + med.getOverstockThreshold());
+		System.out.println("OverStockThreshold: " + med.getOverStockThreshold());
+		System.out.println("ExpSoonThreshold: " + med.getExpSoonThreshold());
 	}
 	
 	public static void printShipments(Iterator shps){
