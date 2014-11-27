@@ -10,15 +10,19 @@ import java.awt.event.*;
 */
 import javax.swing.*;
 
+import common.Observer;
+
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import businessLayer.Medicine;
 import businessLayer.MedicineIterator;
 import businessLayer.PharmacyManager;
+import businessLayer.Shipment;
 
 public class GUI extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
@@ -56,6 +60,12 @@ public class GUI extends JFrame implements ActionListener{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		guiLowStockObserver low = new guiLowStockObserver(this);
+		guiExpDateSoonObserver exp = new guiExpDateSoonObserver(this);
+		
+		PM.RegisterExpCloseObserver(exp);
+		PM.RegisterLowStockObserver(low);
 		
 		int col1 = 20;
 		int row1 = 20;  // index for col1
