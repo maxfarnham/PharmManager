@@ -327,7 +327,7 @@ public class GUI extends JFrame implements ActionListener{
 	      }
 	      if(m.getSource() == newMedB){
 	    	  // New medicine needs newMed name, low threshold and over threshold
-	    	  if(medicine.equals("") || low == 0 || over == 0){
+	    	  if(newMedicine.equals("") || low == 0 || over == 0 || low >= over){
 	    		  newMedicineL.setForeground(Color.red);
 	    		  lowL.setForeground(Color.red);
 	    		  overL.setForeground(Color.red);
@@ -336,8 +336,14 @@ public class GUI extends JFrame implements ActionListener{
 	    		  // TODO:
 	    		  // execute method to insert new med
 	    		  // newMed(newMedicine, low, high);
-	    		  
-	    		  printScreen("newMedB " + newMedicine + " " + lowStr + " " + overStr);
+	    		  if(PM.getMedicine(newMedicine) != null){
+	    			  printScreen(newMedicine + " already exists in our database.");
+	    		  }
+	    		  else{
+	    			  PM.addMedication(newMedicine, low, over);
+	    			  printScreen("Added " + newMedicine + " to database");
+	    		  }
+	    		  //printScreen("newMedB " + newMedicine + " " + lowStr + " " + overStr);
 	    		  //displayTA.setText("newMedB" + newMedicine + " " + lowStr + " " + overStr);
 	    	  }
 	      }
