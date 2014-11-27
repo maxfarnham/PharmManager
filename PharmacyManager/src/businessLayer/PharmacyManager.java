@@ -167,6 +167,33 @@ public class PharmacyManager {
 			return -2;
 		}
 	}
+	
+	public MedicineIterator getAllMedications(){
+		try {
+			ArrayList<Map<String, Object>> medications;
+
+			ArrayList<Medicine> meds = new ArrayList<Medicine>();
+
+			medications = DB.executeQuery(
+					String.format(
+							"SELECT * " +
+					        "FROM Medicine " +
+							"ORDER BY Name ASC "));
+
+			if(medications == null || medications.size() < 1) 
+				return null;
+
+			for(Map<String, Object> medicineData : medications){
+				meds.add(new Medicine(DB, medicineData));
+			}
+
+			return new MedicineIterator(meds);
+		}
+		catch (Exception e) {
+			//TODO - logging?
+			return null;
+		}
+	}
 
 	public MedicineIterator getTopMedications(int N){
 		try {
