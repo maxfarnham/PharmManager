@@ -50,11 +50,17 @@ public class Medicine {
 	}
 
 	public int getSold() throws ClassNotFoundException, SQLException{
+		if(DB.executeScalar("SELECT SUM(Sold) " +
+                            "FROM Shipments WHERE MedicineId = " + this.medicineId) == null) return 0;
+		
 		return (int)DB.executeScalar("SELECT SUM(Sold) " +
-				                     "FROM Shipments WHERE MedicineId = " + this.medicineId);
+                                     "FROM Shipments WHERE MedicineId = " + this.medicineId);
 	}
 
 	public int getStock() throws ClassNotFoundException, SQLException{
+		if(DB.executeScalar("SELECT SUM(InStock) " +
+							"FROM Shipments WHERE MedicineId = " + this.medicineId) == null) return 0;
+		
 		return (int)DB.executeScalar("SELECT SUM(InStock) " +
 									 "FROM Shipments WHERE MedicineId = " + this.medicineId);
 	}

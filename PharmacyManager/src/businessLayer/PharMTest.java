@@ -19,10 +19,14 @@ public class PharMTest {
 		}
 		
 		
+		pm.addMedication("MedXX", 35, 1000000);
+		//pm.addShipment("MedY", 15, 30, 1);
+		/*
 		//TODO Add medications from text file?
 		pm.addMedication("Aspirin", 40, 1000); //Upper limit(notify when overstocked), lower limit (notify when low on stock)
 		pm.addMedication("Tylenol", 20, 500);
 		pm.addMedication("MedX", 35, 1000000);
+		
 		
 		 // (name, expDate, amount, size)
 		pm.addShipment("Aspirin", 15, 30, 1);
@@ -34,7 +38,7 @@ public class PharMTest {
 		
 		
 		pm.aDayHasPassed();
-		
+		*/
 		
 		
 		/*
@@ -45,10 +49,11 @@ public class PharMTest {
 		*/
 		
 		//test purchased()
+		/*
 		pm.purchased("Aspirin", 10, 1);
 		pm.purchased("Tylenol", 30, 1);
 		pm.purchased("MedX", 20, 2);
-		
+		*/
 		/*
 		Medicine med;
 		med = pm.getMedicine("Aspirin");
@@ -56,6 +61,7 @@ public class PharMTest {
 		System.out.println();
 		printShipments(med.getShipmentIterator());
 		*/
+		
 		
 		//test getAllMedications()
 		Iterator meds = pm.getAllMedications();
@@ -95,7 +101,7 @@ public class PharMTest {
 	}
 	
 	public static void printShipments(Iterator shps){
-		while(shps.next()){
+		while(shps != null && shps.next()){
 			Shipment shp = (Shipment) shps.curr();
 			System.out.println("ShipmentID: " + shp.getShipmentID());
 			System.out.println("ExpDate: " + shp.getExpDate());
