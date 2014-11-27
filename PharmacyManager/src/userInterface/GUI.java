@@ -265,9 +265,8 @@ public class GUI extends JFrame implements ActionListener{
 		  int expire = (int)expSpin.getValue();
 		  String expStr = String.format("%d", expire);
 		  int low = (int)lowSpin.getValue();
-		  String lowStr = String.format("%d", low);
 		  int over = (int)overSpin.getValue();
-		  String overStr = String.format("%d", over);
+		  
 		  // Change all text color to black
 		  smallRB.setForeground(Color.black);
 		  mediumRB.setForeground(Color.black);
@@ -291,13 +290,25 @@ public class GUI extends JFrame implements ActionListener{
 			  else{
 				  if(PM.getMedicine(medicine) != null){
 					  // execute sale method
-					  PM.purchased(medicine, quantity, size);
-					  
-					  printScreen("saleB " + medicine + " " + sizeStr + " " + quantityStr + "\n");
+					  int saleStatus = PM.purchased(medicine, quantity, size);
+					  String saleStr = String.format("%d", saleStatus); 
+					  if(saleStatus == 0){
+						  printScreen("Sold " + medicine + " " + sizeStr + " " + quantityStr + "\n");
+						  
+					  }
+					  else if(saleStatus == -1){
+						  printScreen("Sorry, "+ medicine + " " + sizeStr + " is out of stock\n");
+					  }
+					  else if(saleStatus > 0){
+						  printScreen("Sorry, we are short " + saleStr + " units.");
+					  }
+					  else{
+						  printScreen("Error in purchased function");
+					  }
 					  //displayTA.setText(medicine);   
 				  }
-				  {
-					  printScreen(medicine + "is not in the DataBase!\n");
+				  else{
+					  printScreen(medicine + " is not in the DataBase!\n");
 				  }
 			  }
 	    	  //String result = commandHandler.executeNonScalar("SELECT * FROM MEDICINE").toString();    
@@ -320,7 +331,7 @@ public class GUI extends JFrame implements ActionListener{
 	    			  printScreen(medicine + " was not found in the directory! Please add first!\n");
 	    		  }
 	    		  else{
-	    			  printScreen("restockB" + " " + medicine + " " + quantityStr + " " + sizeStr + " " + expStr);
+	    			  printScreen("restockB" + " " + medicine + " " + quantityStr + " " + sizeStr + " " + expStr + "\n");
 	    			  //displayTA.setText("restockB" + medicine + " " + quantityStr + " " + size + " " + expStr); // sample
 	    		  }
 	    	  }
@@ -337,11 +348,15 @@ public class GUI extends JFrame implements ActionListener{
 	    		  // execute method to insert new med
 	    		  // newMed(newMedicine, low, high);
 	    		  if(PM.getMedicine(newMedicine) != null){
-	    			  printScreen(newMedicine + " already exists in our database.");
+	    			  printScreen(newMedicine + " already exists in our database.\n");
 	    		  }
 	    		  else{
-	    			  PM.addMedication(newMedicine, low, over);
-	    			  printScreen("Added " + newMedicine + " to database");
+	    			  if(PM.addMedication(newMedicine, low, over)){
+	    				  printScreen("Added " + newMedicine + " to database.\n");  
+	    			  }
+	    			  else{
+	    				  printScreen("Error adding\n");
+	    			  }
 	    		  }
 	    		  //printScreen("newMedB " + newMedicine + " " + lowStr + " " + overStr);
 	    		  //displayTA.setText("newMedB" + newMedicine + " " + lowStr + " " + overStr);
@@ -381,7 +396,7 @@ public class GUI extends JFrame implements ActionListener{
 	    	  expSpin.setValue(0);
 	    	  lowSpin.setValue(0);
 	    	  overSpin.setValue(0);
-	    	  printScreen("");
+	    	  clearScreen();
 	    	  //displayTA.setText("");
 	      }
 	  }
