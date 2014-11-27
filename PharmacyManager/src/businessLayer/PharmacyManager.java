@@ -24,8 +24,14 @@ public class PharmacyManager {
 		DB = new DataLayer("pharmacy");
 
 		//Create tables, if needed
+		//ignore exception 
+		try{
 		Medicine.CreateTable(DB);
 		Shipment.CreateTable(DB);
+		}
+		catch(Exception e){
+			
+		}
 	}
 	
 	public void RegisterLowStockObserver(Observer o) {

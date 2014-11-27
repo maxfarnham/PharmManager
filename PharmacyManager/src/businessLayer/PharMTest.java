@@ -33,6 +33,8 @@ public class PharMTest {
 		pm.addShipment("MedX", 120, 500, 2);
 		
 		
+		pm.aDayHasPassed();
+		
 		/*
 		Medicine med = pm.getMedicine("Aspirin");
 		printMedicineInfo(med);
@@ -40,17 +42,19 @@ public class PharMTest {
 		printShipments(med.getShipmentIterator());
 		*/
 		
-		System.out.println(pm.purchased("Aspirin", 10, 1));
-		System.out.println(pm.purchased("Tylenol", 30, 1));
-		System.out.println(pm.purchased("MedX", 20, 2));
-		/*
+		pm.purchased("Aspirin", 10, 1);
+		pm.purchased("Tylenol", 30, 1);
+		pm.purchased("MedX", 20, 2);
+		
+		Medicine med;
 		med = pm.getMedicine("Aspirin");
 		printMedicineInfo(med);
 		System.out.println();
 		printShipments(med.getShipmentIterator());
-		*/
 		
 		
+		
+		/*
 		Iterator meds = pm.getTopMedications(3);
 		
 		while(meds.next()){
@@ -59,6 +63,7 @@ public class PharMTest {
 			printShipments(med.getShipmentIterator());
 			System.out.println();
 		}
+		*/
 		
 		
 	}

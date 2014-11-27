@@ -24,41 +24,12 @@ public class DataLayer {
 	    return DriverManager.getConnection("jdbc:sqlite:" + dbPath);
 	}
 	
-	/*
-	//Create tables to test
-	public void createTwoTables(){
-		 try{
-	      String sql = 	"CREATE TABLE Medications " +
-	                   	"(MedicineID 			INT PRIMARY KEY     NOT NULL," +
-	                   	" Name    		      	VARCHAR				NOT NULL, " + 
-	                   	" LowStockThreshold		INT     			NOT NULL, " + 
-	                   	" OverStockThreshold	INT					NOT NULL, " +
-	    				" ExpSoonThreshold		INT					NOT NULL)";
-	      executeNonQuery(sql);
-	    
-	      sql = 		"CREATE TABLE Shipments " +
-                 		"(ShipmentID 	INT PRIMARY KEY     NOT NULL," +
-                 		" Sold          INT	    			NOT NULL, " + 
-                 		" InStock		INT     			NOT NULL, " + 
-                 		" Size			INT					NOT NULL, " +
-	                   	" Expired		INT					NOT NULL, " +
-                 		" ExpDate		INT					NOT NULL, " +
-	                   	" MedicineID	INT					NOT NULL)";
-	      executeNonQuery(sql);
-		 }
-		 catch(Exception e){
-		 }
-		 
-	 }
-	*/
-	
 	 // just verify we can establish a connection with the given database
 	 public DataLayer(String dbPath) throws ClassNotFoundException, SQLException{
 		 if (!dbPath.endsWith(".db"))
 			 dbPath += ".db";
 		 this.dbPath = dbPath;
 		 getConn().close(); 
-		 //createTwoTables(); //testing...
 	 }
 	 
 	 public int executeNonQuery(String sql) throws ClassNotFoundException, SQLException{   // non-query
