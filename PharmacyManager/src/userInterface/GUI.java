@@ -245,6 +245,7 @@ public class GUI extends JFrame implements ActionListener{
 	  
 	  public void actionPerformed(ActionEvent m)
 	  {
+		  clearScreen();
 		  // Grab data from interface
 		  int size = 0;
 		  String sizeStr = null;
@@ -333,7 +334,7 @@ public class GUI extends JFrame implements ActionListener{
 	    			  printScreen(medicine + " was not found in the directory! Please add first!\n");
 	    		  }
 	    		  else{
-	    			  printScreen("restockB" + " " + medicine + " " + quantityStr + " " + sizeStr + " " + expStr + "\n");
+	    			  printScreen("Restocked " + medicine + " - Qty: " + sizeStr  + " " + quantityStr+  " - expires in " + expStr + " days\n");
 	    			  //displayTA.setText("restockB" + medicine + " " + quantityStr + " " + size + " " + expStr); // sample
 	    		  }
 	    	  }
@@ -388,18 +389,27 @@ public class GUI extends JFrame implements ActionListener{
 	    	  MedicineIterator medIter = PM.getAllMedications();
 	    	  String name;
 	    	  String stockStr;
+	    	  String soldStr;
 	    	  int stock = 0;
+	    	  int sold = 0;
 	    	  while(medIter.next()){
 	    		  currentMed = (Medicine) medIter.curr();
 	    		  name = currentMed.getName();
-	    		  printScreen(name + " ");
+	    		  
 	    		  try {
 					stock = currentMed.getStock();
-	    		  } catch (ClassNotFoundException e) {
-	    		  } catch (SQLException e) {
-	    		  }
-	    		  stockStr = String.format("%d\n", stock);
-	    		  printScreen(stockStr);
+	    		  } catch (ClassNotFoundException | SQLException e) {
+	    			  stock = 0;
+	    		  } 
+	    		  try {
+					sold = currentMed.getSold();
+				} catch (ClassNotFoundException | SQLException e) {
+					sold = 0;
+				}
+	    		  
+	    		  stockStr = String.format("%d", stock);
+	    		  soldStr = String.format("%d", sold);
+	    		  printScreen(name + " - Stock: " + stockStr + " | Sold: " + soldStr + "\n");
 	    		  stock = 0;
 	    		  
 	    	  }
