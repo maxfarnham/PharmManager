@@ -239,6 +239,7 @@ public class PharmacyManager {
 
 	public void aDayHasPassed() throws ClassNotFoundException, SQLException{
 		DB.executeNonQuery("UPDATE Shipments SET ExpDate = ExpDate-1;");
+		//Update
 		DB.executeNonQuery("UPDATE Shipments SET Expired = InStock, InStock = 0 WHERE ExpDate <= 0;");
 		
 		ArrayList<Map<String, Object>> meds = DB.executeQuery("SELECT MedicineID FROM Medicine");
